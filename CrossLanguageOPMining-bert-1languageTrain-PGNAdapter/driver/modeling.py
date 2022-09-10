@@ -490,6 +490,7 @@ class AdapterWithParameterGen(nn.Module):
         self.init_weights(config)
 
     def forward(self, hidden_states, lang_emb=None):
+        # print("Knoe the size for lang emb: ", lang_emb)
         down_w = torch.matmul(lang_emb, self.down_W.view(self.low_rank_dim, -1)).view(self.config.hidden_size, self.config.adapter_size)
         down_b = torch.matmul(lang_emb, self.down_b)
         down_projected = F.linear(hidden_states, down_w.t(), down_b)
@@ -886,6 +887,7 @@ class BertModel(BertPreTrainedModel):
         bert_hidden = torch.bmm(bert_pieces, encoded_layers[self.bert_layers - 1])
 
         if bert_pieces is not None:
+            print("HELLO ITS MEEEEE!!!")
             return bert_hidden
         else:
             return encoded_layers, pooled_output

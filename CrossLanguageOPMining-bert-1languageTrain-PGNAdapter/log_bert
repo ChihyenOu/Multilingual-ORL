@@ -1,0 +1,113 @@
+Better speed can be achieved with apex installed from https://www.github.com/nvidia/apex.
+GPU available:  True
+CuDNN: 
+ True
+Loaded config file sucessfully.
+pretrained_embeddings_file expdata/wiki.en.vec.orl.filted.1.txt
+data_dir expdata/opinion
+train_file expdata/opinion/emnlp20orl.en.sample
+dev_file expdata/opinion/emnlp20orl.ch.sample
+test_file expdata/opinion/emnlp20orl.ch.sample
+min_occur_count 0
+save_dir expdata/opmodel
+config_file expdata/opmodel/config.cfg
+save_model_path expdata/opmodel/model
+save_vocab_path expdata/opmodel/vocab
+load_dir expdata/opmodel
+load_model_path expdata/opmodel/model
+load_vocab_path expdata/opmodel/vocab
+bert_path bert-base-multilingual-cased
+bert_config_path bert-base-multilingual-cased/bert_config.json
+bert_hidden_size 768
+output_hidden_states True
+output_attentions False
+tune_start_layer 12
+use_adapter true
+use_language_emb true
+num_adapters 1
+adapter_size 256
+one_hot false
+language_emb_size 32
+language_emb_dropout 0.1
+language_drop_rate 0.2
+num_language_features 289
+nl_project 289
+language_features syntax_knn+phonology_knn+inventory_knn
+adapter_initializer_range 0.0001
+in_langs en
+out_langs zh
+letter_codes data/letter_codes.json
+model BiLSTMCRFModel
+lstm_layers 3
+word_dims 100
+predict_dims 100
+dropout_emb 0.0
+lstm_hiddens 200
+dropout_lstm_input 0.33
+dropout_lstm_hidden 0.33
+hidden_dims 100
+inner_hidden_dims 400
+number_heads 8
+num_layers 6
+dropout_hidden 0.33
+learning_rate 2e-3
+decay .75
+decay_steps 5000
+beta_1 .9
+beta_2 .9
+epsilon 1e-12
+clip 1.0
+parser_tune 1
+train_iters 5
+train_batch_size 32
+test_batch_size 32
+validate_every 5
+update_every 160
+save_after 2
+Total words: 400000
+
+The dim of pretrained embeddings: 300
+
+
+GPU using status:  True
+200 1068
+Orthogonal pretrainer loss: 7.28e-30
+200 600
+Orthogonal pretrainer loss: 1.59e-30
+200 600
+Orthogonal pretrainer loss: 1.41e-30
+Traceback (most recent call last):
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1695, in gzopen
+    t = cls.taropen(name, mode, fileobj, **kwargs)
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1672, in taropen
+    return cls(name, mode, fileobj, **kwargs)
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1532, in __init__
+    self.firstmember = self.next()
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 2367, in next
+    raise e
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 2340, in next
+    tarinfo = self.tarinfo.fromtarfile(self)
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1122, in fromtarfile
+    buf = tarfile.fileobj.read(BLOCKSIZE)
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/gzip.py", line 301, in read
+    return self._buffer.read(size)
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/_compression.py", line 68, in readinto
+    data = self.read(len(byte_view))
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/gzip.py", line 488, in read
+    if not self._read_gzip_header():
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/gzip.py", line 436, in _read_gzip_header
+    raise BadGzipFile('Not a gzipped file (%r)' % magic)
+gzip.BadGzipFile: Not a gzipped file (b'PK')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/ceph/chou/ChineseORL-with-Corpus-Translation/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/driver/Test.py", line 109, in <module>
+    bert = AdapterBERTModel.from_pretrained(config.load_model_path, config=bert_config)
+  File "/ceph/chou/ChineseORL-with-Corpus-Translation/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/./driver/modeling.py", line 701, in from_pretrained
+    with tarfile.open(resolved_archive_file, 'r:gz') as archive:
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1642, in open
+    return func(name, filemode, fileobj, **kwargs)
+  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1699, in gzopen
+    raise ReadError("not a gzip file") from e
+tarfile.ReadError: not a gzip file

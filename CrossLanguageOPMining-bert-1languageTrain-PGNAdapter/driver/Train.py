@@ -55,9 +55,13 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                 bert_segments_tensor = bert_segments_tensor.cuda()
                 bert_pieces_tensor = bert_pieces_tensor.cuda()
             lang_embedding = language_embedder(lang_ids)
+            
+            # BERTModel PGNAdaptor
             bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-
             labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
+            # PGNAdaptor    
+            # pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+            # labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
             loss, stat = labeler.compute_loss(labels, outmasks)
             loss = loss / config.update_every
             loss.backward()
@@ -275,6 +279,12 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                     best_score = dev_score
                     if config.save_after > 0 and iter > config.save_after:
                         torch.save(labeler.model.state_dict(), config.save_model_path)
+                ### This is only for small sample dataset
+                else: ## Delete them after start training on huge dataset for many iterations
+                    print("Dev score does not better than best score")
+                    print("Current best score = %.2f, current dev score = %.2f" %(best_score, dev_score))
+                    if config.save_after > 0 and iter > config.save_after and iter == config.train_iters - 1:
+                        torch.save(labeler.model.state_dict(), config.save_model_path)
 
 
 def evaluate(data, labeler, vocab, outputFile):
@@ -449,6 +459,8 @@ if __name__ == '__main__':
     language_embedder = LanguageMLP(config=config)
 
     model = eval(config.model)(vocab, config, vec)
+    # print(model) # BiLSTMCRFModel
+    
     # bert = BertExtractor(config)
     bert_config = BertConfig.from_json_file(config.bert_config_path)
     bert_config.use_adapter = config.use_adapter
@@ -458,8 +470,13 @@ if __name__ == '__main__':
     bert_config.language_emb_size = config.language_emb_size
     bert_config.num_language_features = config.language_features
     bert_config.nl_project = config.nl_project
-    bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config)
+    # BERT
+    bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
 
+    # PGNBERT
+    # bert = AdapterPGNBertModel(config.bert_path)
+    # bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
+    
     if config.use_cuda:
         torch.backends.cudnn.enabled = True
         model = model.cuda()
@@ -481,4 +498,6 @@ if __name__ == '__main__':
     dev_data = read_corpus(config.dev_file, bert_token, lang_dic)
     test_data = read_corpus(config.test_file, bert_token, lang_dic)
 
+    # train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
+    # PGNBERT
     train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
