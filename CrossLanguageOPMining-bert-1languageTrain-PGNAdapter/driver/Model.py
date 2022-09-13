@@ -95,12 +95,12 @@ class BiLSTMCRFModel(nn.Module):
         - pred_function: Takes input and mask, returns prediction.
         - loss_function: Takes input, mask and labels, returns the final cross entropy loss (scalar).
     """
-    def __init__(self, vocab, config, pretrained_embedding):
+    def __init__(self, vocab, config): # remove , pretrained_embedding
         super(BiLSTMCRFModel, self).__init__()
         self.config = config
         self.PAD = vocab.PAD
         self.word_embed = nn.Embedding(vocab.vocab_size, config.word_dims, padding_idx=self.PAD)
-        self.extword_embed = nn.Embedding(vocab.extvocab_size, config.word_dims, padding_idx=self.PAD)
+        # self.extword_embed = nn.Embedding(vocab.extvocab_size, config.word_dims, padding_idx=self.PAD) # Remove this
 
         word_init = np.zeros((vocab.vocab_size, config.word_dims), dtype=np.float32)
         self.word_embed.weight.data.copy_(torch.from_numpy(word_init))

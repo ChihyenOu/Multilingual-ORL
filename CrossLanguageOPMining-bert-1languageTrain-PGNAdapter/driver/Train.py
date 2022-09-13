@@ -441,15 +441,20 @@ if __name__ == '__main__':
     argparser.add_argument('--use-cuda', action='store_true', default=False)
 
     args, extra_args = argparser.parse_known_args()
+    # print(args) # Namespace(config_file='expdata/opinion.cfg', thread=1, use_cuda=False)
+    # print(extra_args) # []
+
+    # if there is any extra_args, add them to config_file # In our case, it doesn't so the config_file keeps the same
     config = Configurable(args.config_file, extra_args)
 
     vocab = creat_vocab(config.train_file, config.min_occur_count)
-    vec = vocab.load_pretrained_embs(config.pretrained_embeddings_file)
+    # vec = vocab.load_pretrained_embs(config.pretrained_embeddings_file) # Remove this line # pretrained_embeddings_file is not needed
 
     pickle.dump(vocab, open(config.save_vocab_path, 'wb'))
 
-    args, extra_args = argparser.parse_known_args()
-    config = Configurable(args.config_file, extra_args)
+    # remove below two lines because it repeats twice?
+    # args, extra_args = argparser.parse_known_args()
+    # config = Configurable(args.config_file, extra_args)
     torch.set_num_threads(args.thread)
 
     config.use_cuda = False
@@ -458,7 +463,10 @@ if __name__ == '__main__':
 
     language_embedder = LanguageMLP(config=config)
 
-    model = eval(config.model)(vocab, config, vec)
+    # eval(expression): the content of expression is evaluated as a Python expression 
+    # print(eval(config.model)) # <class 'driver.Model.BiLSTMCRFModel'>
+    # # this eval() is not the model.eval() in PyTorch
+    model = eval(config.model)(vocab, config) # Remove , vec
     # print(model) # BiLSTMCRFModel
     
     # bert = BertExtractor(config)
@@ -482,9 +490,9 @@ if __name__ == '__main__':
         model = model.cuda()
         bert = bert.cuda()
         language_embedder = language_embedder.cuda()
-
+    
     labeler = SRLLabeler(model)
-
+    
     bert_token = BertTokenHelper(config.bert_path)
 
     in_language_list = config.in_langs
@@ -497,7 +505,7 @@ if __name__ == '__main__':
     data = read_corpus(config.train_file, bert_token, lang_dic)
     dev_data = read_corpus(config.dev_file, bert_token, lang_dic)
     test_data = read_corpus(config.test_file, bert_token, lang_dic)
-
+    
     # train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
     # PGNBERT
     train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)

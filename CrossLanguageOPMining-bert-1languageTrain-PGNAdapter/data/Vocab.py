@@ -27,6 +27,10 @@ class Vocab(object):
         self._label2id = reverse(self._id2label)
         if len(self._label2id) != len(self._id2label):
             print("serious bug: ner labels dumplicated, please check!")
+        
+        ## ADD 
+        reverse = lambda x: dict(zip(x, range(len(x)))) ## ADD 
+        self._extword2id = reverse(self._id2extword) ## ADD 
 
         print("Vocab info: #words %d, #labels %d" % (self.vocab_size, self.label_size))
 

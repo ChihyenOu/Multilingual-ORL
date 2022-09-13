@@ -3,7 +3,7 @@ GPU available:  True
 CuDNN: 
  True
 Loaded config file sucessfully.
-pretrained_embeddings_file expdata/wiki.en.vec.orl.filted.1.txt
+pretrained_embeddings_file expdata/wiki.en.vec.orl.filtered.1.txt
 data_dir expdata/opinion
 train_file expdata/opinion/emnlp20orl.en.sample
 dev_file expdata/opinion/emnlp20orl.ch.sample
@@ -64,50 +64,178 @@ test_batch_size 32
 validate_every 5
 update_every 160
 save_after 2
-Total words: 400000
+Total num:  7
+Vocab info: #words 140, #labels 10
 
-The dim of pretrained embeddings: 300
-
-
-GPU using status:  True
+GPU using status:  False
 200 1068
 Orthogonal pretrainer loss: 7.28e-30
 200 600
 Orthogonal pretrainer loss: 1.59e-30
 200 600
 Orthogonal pretrainer loss: 1.41e-30
-Traceback (most recent call last):
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1695, in gzopen
-    t = cls.taropen(name, mode, fileobj, **kwargs)
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1672, in taropen
-    return cls(name, mode, fileobj, **kwargs)
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1532, in __init__
-    self.firstmember = self.next()
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 2367, in next
-    raise e
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 2340, in next
-    tarinfo = self.tarinfo.fromtarfile(self)
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1122, in fromtarfile
-    buf = tarfile.fileobj.read(BLOCKSIZE)
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/gzip.py", line 301, in read
-    return self._buffer.read(size)
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/_compression.py", line 68, in readinto
-    data = self.read(len(byte_view))
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/gzip.py", line 488, in read
-    if not self._read_gzip_header():
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/gzip.py", line 436, in _read_gzip_header
-    raise BadGzipFile('Not a gzipped file (%r)' % magic)
-gzip.BadGzipFile: Not a gzipped file (b'PK')
+Load bert vocabulary finished
+Total num:  7
+Total num:  30
+Total num:  30
+/home/chou/miniconda3/envs/env/lib/python3.10/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+Iteration: 0
+HELLO ITS MEEEEE!!!
+Step 0, Epoch 0, 0/1| acc: 10.81| ppl: 9.36| 55.3 tgt tok/s| 4.02 s elapsed
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.77 
+Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
 
-The above exception was the direct cause of the following exception:
+Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
 
-Traceback (most recent call last):
-  File "/ceph/chou/ChineseORL-with-Corpus-Translation/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/driver/Test.py", line 109, in <module>
-    bert = AdapterBERTModel.from_pretrained(config.load_model_path, config=bert_config)
-  File "/ceph/chou/ChineseORL-with-Corpus-Translation/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/./driver/modeling.py", line 701, in from_pretrained
-    with tarfile.open(resolved_archive_file, 'r:gz') as archive:
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1642, in open
-    return func(name, filemode, fileobj, **kwargs)
-  File "/home/chou/miniconda3/envs/env/lib/python3.10/tarfile.py", line 1699, in gzopen
-    raise ReadError("not a gzip file") from e
-tarfile.ReadError: not a gzip file
+Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.70 
+Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Exceed best score: history = -1.00, current = 0.00
+Iteration: 1
+HELLO ITS MEEEEE!!!
+Step 1, Epoch 1, 0/1| acc: 83.78| ppl: 4.77| 76.0 tgt tok/s| 2.92 s elapsed
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.44 
+Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.45 
+Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Dev score does not better than best score
+Current best score = 0.00, current dev score = 0.00
+Iteration: 2
+HELLO ITS MEEEEE!!!
+Step 2, Epoch 2, 0/1| acc: 83.78| ppl: 2.56| 76.7 tgt tok/s| 2.89 s elapsed
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.45 
+Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.61 
+Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Dev score does not better than best score
+Current best score = 0.00, current dev score = 0.00
+Iteration: 3
+HELLO ITS MEEEEE!!!
+Step 3, Epoch 3, 0/1| acc: 83.78| ppl: 2.76| 75.2 tgt tok/s| 2.95 s elapsed
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.50 
+Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.55 
+Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Dev score does not better than best score
+Current best score = 0.00, current dev score = 0.00
+Iteration: 4
+HELLO ITS MEEEEE!!!
+Step 4, Epoch 4, 0/1| acc: 83.78| ppl: 2.39| 73.2 tgt tok/s| 3.03 s elapsed
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.51 
+Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+
+HELLO ITS MEEEEE!!!
+sentence num: 30,  parser time = 4.56 
+Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
+
+Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
+Dev score does not better than best score
+Current best score = 0.00, current dev score = 0.00
