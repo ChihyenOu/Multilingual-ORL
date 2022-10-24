@@ -57,10 +57,12 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
             lang_embedding = language_embedder(lang_ids)
             
             # BERTModel PGNAdaptor
-            bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+            bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
             labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
             # PGNAdaptor    
-            # pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+            # pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                #bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
             # labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
             loss, stat = labeler.compute_loss(labels, outmasks)
             loss = loss / config.update_every
@@ -479,11 +481,11 @@ if __name__ == '__main__':
     bert_config.num_language_features = config.language_features
     bert_config.nl_project = config.nl_project
     # BERT
-    bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
+    # bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
 
     # PGNBERT
     # bert = AdapterPGNBertModel(config.bert_path)
-    # bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
+    bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
     
     if config.use_cuda:
         torch.backends.cudnn.enabled = True
@@ -505,7 +507,6 @@ if __name__ == '__main__':
     data = read_corpus(config.train_file, bert_token, lang_dic)
     dev_data = read_corpus(config.dev_file, bert_token, lang_dic)
     test_data = read_corpus(config.test_file, bert_token, lang_dic)
-    
-    # train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
+    print("Finish code test!")
     # PGNBERT
-    train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
+    # train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)

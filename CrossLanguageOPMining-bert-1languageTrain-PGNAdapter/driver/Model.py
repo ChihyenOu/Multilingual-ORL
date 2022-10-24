@@ -108,7 +108,7 @@ class BiLSTMCRFModel(nn.Module):
         # self.extword_embed.weight.data.copy_(torch.from_numpy(pretrained_embedding))
         # self.extword_embed.weight.requires_grad = False
 
-        # {0/pad, 1/predict, 2/other}
+        # {0/pad, 1/predict, 2/other} OR # {o/pad, 1/is DSE, 2/not DSE} # check later
         self.predicate_embed = nn.Embedding(3, config.predict_dims, padding_idx=self.PAD)
         nn.init.normal_(self.predicate_embed.weight, 0.0, 1.0 / (config.predict_dims ** 0.5))
 

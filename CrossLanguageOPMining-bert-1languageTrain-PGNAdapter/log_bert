@@ -3,21 +3,20 @@ GPU available:  True
 CuDNN: 
  True
 Loaded config file sucessfully.
-pretrained_embeddings_file expdata/wiki.en.vec.orl.filtered.1.txt
-data_dir expdata/opinion
-train_file expdata/opinion/emnlp20orl.en.sample
-dev_file expdata/opinion/emnlp20orl.ch.sample
-test_file expdata/opinion/emnlp20orl.ch.sample
+data_dir expdata/example_data
+train_file expdata/example_data/result_orl_ch_train.txt
+dev_file expdata/example_data/result_orl_ch_val.txt
+test_file expdata/example_data/result_orl_ch_test.txt
 min_occur_count 0
-save_dir expdata/opmodel
-config_file expdata/opmodel/config.cfg
-save_model_path expdata/opmodel/model
-save_vocab_path expdata/opmodel/vocab
-load_dir expdata/opmodel
-load_model_path expdata/opmodel/model
-load_vocab_path expdata/opmodel/vocab
-bert_path bert-base-multilingual-cased
-bert_config_path bert-base-multilingual-cased/bert_config.json
+save_dir expdata/example_output_ch
+config_file expdata/example_output_ch/config.cfg
+save_model_path expdata/example_output_ch/model
+save_vocab_path expdata/example_output_ch/vocab
+load_dir expdata/example_output_ch
+load_model_path expdata/example_output_ch/model
+load_vocab_path expdata/example_output_ch/vocab
+bert_path bert-base-multilingual-cased-chORL
+bert_config_path bert-base-multilingual-cased-chORL/bert_config.json
 bert_hidden_size 768
 output_hidden_states True
 output_attentions False
@@ -34,7 +33,7 @@ num_language_features 289
 nl_project 289
 language_features syntax_knn+phonology_knn+inventory_knn
 adapter_initializer_range 0.0001
-in_langs en
+in_langs zh
 out_langs zh
 letter_codes data/letter_codes.json
 model BiLSTMCRFModel
@@ -64,8 +63,8 @@ test_batch_size 32
 validate_every 5
 update_every 160
 save_after 2
-Total num:  7
-Vocab info: #words 140, #labels 10
+Total num:  180
+Vocab info: #words 1317, #labels 8
 
 GPU using status:  False
 200 1068
@@ -74,168 +73,11 @@ Orthogonal pretrainer loss: 7.28e-30
 Orthogonal pretrainer loss: 1.59e-30
 200 600
 Orthogonal pretrainer loss: 1.41e-30
+Some weights of the model checkpoint at bert-base-multilingual-cased were not used when initializing BertModel: ['cls.predictions.transform.dense.bias', 'cls.seq_relationship.weight', 'cls.predictions.bias', 'cls.seq_relationship.bias', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.decoder.weight', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.dense.weight']
+- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
 Load bert vocabulary finished
-Total num:  7
-Total num:  30
-Total num:  30
-/home/chou/miniconda3/envs/env/lib/python3.10/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
-  warnings.warn(
-Iteration: 0
-HELLO ITS MEEEEE!!!
-Step 0, Epoch 0, 0/1| acc: 10.81| ppl: 9.36| 55.3 tgt tok/s| 4.02 s elapsed
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.77 
-Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.70 
-Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Exceed best score: history = -1.00, current = 0.00
-Iteration: 1
-HELLO ITS MEEEEE!!!
-Step 1, Epoch 1, 0/1| acc: 83.78| ppl: 4.77| 76.0 tgt tok/s| 2.92 s elapsed
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.44 
-Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.45 
-Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Dev score does not better than best score
-Current best score = 0.00, current dev score = 0.00
-Iteration: 2
-HELLO ITS MEEEEE!!!
-Step 2, Epoch 2, 0/1| acc: 83.78| ppl: 2.56| 76.7 tgt tok/s| 2.89 s elapsed
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.45 
-Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.61 
-Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Dev score does not better than best score
-Current best score = 0.00, current dev score = 0.00
-Iteration: 3
-HELLO ITS MEEEEE!!!
-Step 3, Epoch 3, 0/1| acc: 83.78| ppl: 2.76| 75.2 tgt tok/s| 2.95 s elapsed
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.50 
-Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.55 
-Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Dev score does not better than best score
-Current best score = 0.00, current dev score = 0.00
-Iteration: 4
-HELLO ITS MEEEEE!!!
-Step 4, Epoch 4, 0/1| acc: 83.78| ppl: 2.39| 73.2 tgt tok/s| 3.03 s elapsed
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.51 
-Exact Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Dev: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Dev Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Dev: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Dev Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-
-HELLO ITS MEEEEE!!!
-sentence num: 30,  parser time = 4.56 
-Exact Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Exact Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Binary Test: Recall = 0/14 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Agent: Recall = 0/5 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-Binary Test Target: Recall = 0/9 = 0.00, Precision = 0/0 =0.00, F-measure = 0.00
-
-Prop Test: Recall = 0.00/14 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-prop Test Agent: Recall = 0.00/5 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Prop Test Target: Recall = 0.00/9 = 0.00, Precision = 0.00/0 =0.00, F-measure = 0.00
-Dev score does not better than best score
-Current best score = 0.00, current dev score = 0.00
+Total num:  180
+Total num:  21
+Total num:  187
+Finish code test!
