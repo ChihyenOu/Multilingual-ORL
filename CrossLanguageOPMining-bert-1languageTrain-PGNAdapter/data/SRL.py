@@ -16,16 +16,24 @@ class Sentence:
     def __init__(self, words, bert_token=None, lang_id=None):
         self.words = list(words)
         self.length = len(self.words)
-        self.key_head = -1
-        self.key_start = -1
-        self.key_end = -1
-        self.key_label = ""
+        self.key_list = []
+        # self.key_head = -1
+        # self.key_start = -1
+        # self.key_end = -1
+        self.key_label = "DSE" # Change
         self.lang_id = lang_id
 
         if bert_token is not None:
             sentence_list = [word.org_form for word in self.words]
             self.list_bert_indice, self.list_segments_id, self.list_piece_id = bert_token.bert_ids(sentence_list)
 
+        # New Version to get DSE indexes
+        for idx in range(self.length):
+            cur_label = words[idx].label
+            if cur_label.startswith("B-"+self.key_label) or cur_label.startswith("I-"+self.key_label):
+                self.key_list.append(idx)
+
+        ''' # Previous version
         for idx in range(self.length):
             if words[idx].label.endswith("-*"):
                 self.key_head = idx
@@ -37,7 +45,7 @@ class Sentence:
             if cur_label.startswith("B-"+self.key_label) or cur_label.startswith("S-"+self.key_label):
                 self.key_start = idx
             if cur_label.startswith("E-"+self.key_label) or cur_label.startswith("S-"+self.key_label):
-                self.key_end = idx
+                self.key_end = idx'''
 
 
 def label_to_entity(labels):

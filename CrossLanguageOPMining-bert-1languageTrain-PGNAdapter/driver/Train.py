@@ -57,13 +57,17 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
             lang_embedding = language_embedder(lang_ids)
             
             # BERTModel PGNAdaptor
-            bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
-                                bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-            labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
+            # bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                # bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+            # labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
+
             # PGNAdaptor    
-            # pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
-                                #bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-            # labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
+            pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+            print("Hey")
+            print(pgnbert_hidden.size())
+            labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
+            
             loss, stat = labeler.compute_loss(labels, outmasks)
             loss = loss / config.update_every
             loss.backward()
@@ -177,6 +181,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                 '''
                     Test
                 '''
+                
                 test_gold_num, test_predict_num, test_correct_num, \
                 test_gold_agent_num, test_predict_agent_num, test_correct_agent_num, \
                 test_gold_target_num, test_predict_target_num, test_correct_target_num, \
@@ -481,11 +486,11 @@ if __name__ == '__main__':
     bert_config.num_language_features = config.language_features
     bert_config.nl_project = config.nl_project
     # BERT
-    # bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
+    bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
 
     # PGNBERT
     # bert = AdapterPGNBertModel(config.bert_path)
-    bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
+    # bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
     
     if config.use_cuda:
         torch.backends.cudnn.enabled = True
@@ -509,4 +514,4 @@ if __name__ == '__main__':
     test_data = read_corpus(config.test_file, bert_token, lang_dic)
     print("Finish code test!")
     # PGNBERT
-    # train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
+    train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)

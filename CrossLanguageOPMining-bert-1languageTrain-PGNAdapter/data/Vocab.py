@@ -153,7 +153,8 @@ def creat_vocab(corpusFile, min_occur_count):
             index = 0
             for token in sentence.words:
                 word_counter[token.form] += 1
-                if index < sentence.key_start or index > sentence.key_end:
+                # if index < sentence.key_start or index > sentence.key_end: # Old version
+                if index not in sentence.key_list: # New version
                     label_counter[token.label] += 1
                 index = index + 1
 

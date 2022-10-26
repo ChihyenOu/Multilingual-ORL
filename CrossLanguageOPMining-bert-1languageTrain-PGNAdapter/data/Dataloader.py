@@ -13,6 +13,8 @@ def judge_language_type(file_name):
         lang = 'en'
     elif 'pt' in file_name:
         lang = 'pt'
+    elif 'de' in file_name:
+        lang = 'de'
     else:
         print(file_name)
         raise RuntimeError
@@ -53,14 +55,19 @@ def sentence2id(sentence, vocab):
     for token in sentence.words:
         wordid = vocab.word2id(token.form)
         extwordid = vocab.extword2id(token.form)
-        if index < sentence.key_start or index > sentence.key_end:
+
+        # if index < sentence.key_start or index > sentence.key_end: # old version
+        if index not in sentence.key_list: # new version
             labelid = vocab.label2id(token.label)
         else:
             labelid = vocab.PAD
+        
         tokens.append([wordid, extwordid, labelid])
         index = index + 1
 
-    return tokens,sentence.key_head,sentence.key_start,sentence.key_end, sentence.list_bert_indice, sentence.list_segments_id, sentence.list_piece_id, sentence.lang_id
+    # return tokens,sentence.key_head,sentence.key_start,sentence.key_end, sentence.list_bert_indice, sentence.list_segments_id, sentence.list_piece_id, sentence.lang_id
+    return tokens,sentence.key_list, sentence.list_bert_indice, sentence.list_segments_id, sentence.list_piece_id, sentence.lang_id
+
 
 def batch_slice(data, batch_size, bsorted=True):
     batch_num = int(np.ceil(len(data) / float(batch_size)))
@@ -119,7 +126,8 @@ def batch_data_variable(batch, vocab):
     ###
 
     b = 0
-    for tokens, key_head, key_start, key_end, list_bert_indice, list_segments_id, list_piece_id, lang_id in sentences_numberize(batch, vocab):
+    # for tokens, key_head, key_start, key_end, list_bert_indice, list_segments_id, list_piece_id, lang_id in sentences_numberize(batch, vocab): # old version
+    for tokens, key_list, list_bert_indice, list_segments_id, list_piece_id, lang_id in sentences_numberize(batch, vocab): # new version
         index = 0
         lang_ids = lang_id
         for word in tokens:
@@ -129,7 +137,8 @@ def batch_data_variable(batch, vocab):
             inmasks[b, index] = 1
             outmasks[b, index] = 1
             predicts[b, index] = 2
-            if index >= key_start and index <= key_end:
+            # if index >= key_start and index <= key_end: # old version
+            if index in key_list: # New version
                 predicts[b, index] = 1
                 #outmasks[b, index] = 0
             index += 1
@@ -152,7 +161,8 @@ def batch_variable_srl(inputs, labels, vocab):
     for input, label in zip(inputs, labels):
         predicted_labels = []
         for idx in range(input.length):
-            if idx < input.key_start or idx > input.key_end:
+            # if idx < input.key_start or idx > input.key_end: # old version
+            if idx not in input.key_list: # New version
                 predicted_labels.append(vocab.id2label(label[idx]))
             else:
                 predicted_labels.append(input.words[idx].label)
