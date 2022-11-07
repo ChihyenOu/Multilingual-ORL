@@ -94,10 +94,10 @@ def label_to_entity(labels):
                 if labels[next_idx] == "O" or labels[next_idx].startswith("B-"):
                     break
                 next_label = labels[next_idx][2:]
-                if next_label.endswith("DSE"):
-                    predict = True
                 if next_label != label:
                     break
+                if next_label.endswith("DSE"):
+                    predict = True
                 end_idx = next_idx
                 next_idx = next_idx + 1
                 count += 1
@@ -107,15 +107,16 @@ def label_to_entity(labels):
             if count > 1:
                 print("Total count: ", count)
             if not predict:
+                # print("current: ", (idx, end_idx, label))
                 entities.add("[%d,%d]%s"%(idx, end_idx, label)) # CHANGE
-            idx = next_idx + 1 # CHANGE
+            idx = end_idx + 1 # CHANGE
         
         else:
             raise Exception('Wrong label.')
 
 
     return entities
-'''
+
 def normalize_labels(labels):
     length = len(labels)
     change = 0
@@ -165,7 +166,7 @@ def normalize_labels(labels):
             labels[idx] = new_label
             change = change + 1
 
-    return normed_labels, change'''
+    return normed_labels, change
 
 def getListFromStr(entity):
     entity_del_start = ''.join(list(entity)[1:])
@@ -400,7 +401,7 @@ def printSRL(output, sentence):
 
 if __name__ == '__main__':
     goldlabels = ["B-AGENT", "O", "B-TARGET", "I-TARGET", "I-TARGET", "B-DSE-*", "B-AGENT", "I-DSE", "I-DSE"]
-    predictlabels = ["B-AGENT", "I-AGENT", "B-TARGET", "I-TARGET", "O", "O", "B-AGENT", "I-AGENT", "I-DSE"]
+    predictlabels = ["B-AGENT", "I-AGENT", "B-TARGET", "I-TARGET", "O", "O", "I-AGENT", "I-AGENT", "I-DSE"]
 
     gold_entities = label_to_entity(goldlabels)
     print(gold_entities)
