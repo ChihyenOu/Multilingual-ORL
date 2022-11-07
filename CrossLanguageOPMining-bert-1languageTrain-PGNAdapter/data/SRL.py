@@ -134,8 +134,7 @@ def normalize_labels(labels):
             next_idx = idx + 1
             end_idx = idx
             while next_idx < length:
-                if labels[next_idx] == "O" or labels[next_idx].startswith("B-") \
-                        or labels[next_idx].startswith("S-"):
+                if labels[next_idx] == "O" or labels[next_idx].startswith("B-"):
                     break
                 next_label = labels[next_idx][2:]
                 if next_label.endswith("-*"):
@@ -144,27 +143,28 @@ def normalize_labels(labels):
                     break
                 end_idx = next_idx
                 next_idx = next_idx + 1
-            if end_idx == idx:
+            """if end_idx == idx:
                 new_label = "S-" + labels[idx][2:]
                 #print("Change %s to %s" % (labels[idx], new_label))
                 labels[idx] = new_label
                 normed_labels[idx] = new_label
-                change = change + 1
+                change = change + 1"""
             idx = end_idx + 1
-        elif labels[idx].startswith("S-"):
-            idx = idx + 1
-        elif labels[idx].startswith("M-"):
-            new_label = "B-" + labels[idx][2:]
-            #print("Change %s to %s" % (labels[idx], new_label))
-            normed_labels[idx] = new_label
-            labels[idx] = new_label
-            change = change + 1
+        elif labels[idx].startswith("I-"):
+            label = labels[idx][2:]
+            next_idx = idx + 1
+            end_idx = idx
+            while next_idx < length:
+                if labels[next_idx] == "O" or labels[next_idx].startswith("B"):
+                    break
+                next_label = labels[next_idx][2:]
+                if next_label != label:
+                    break
+                end_idx = next_idx
+                next_idx = next_idx + 1
+            idx = end_idx + 1    
         else:
-            new_label = "S-" + labels[idx][2:]
-            #print("Change %s to %s" % (labels[idx], new_label))
-            normed_labels[idx] = new_label
-            labels[idx] = new_label
-            change = change + 1
+            raise Exception('Wrong normalized label.')
 
     return normed_labels, change
 
@@ -400,11 +400,14 @@ def printSRL(output, sentence):
 
 
 if __name__ == '__main__':
-    goldlabels = ["B-AGENT", "O", "B-TARGET", "I-TARGET", "I-TARGET", "B-DSE-*", "B-AGENT", "I-DSE", "I-DSE"]
+    goldlabels = ["B-AGENT", "O", "B-TARGET", "I-TARGET", "I-TARGET", "B-DSE-*", "B-AGENT", "I-DSE", "I-DSE", "I-TARGET", "I-TARGET"]
     predictlabels = ["B-AGENT", "I-AGENT", "B-TARGET", "I-TARGET", "O", "O", "I-AGENT", "I-AGENT", "I-DSE"]
 
     gold_entities = label_to_entity(goldlabels)
     print(gold_entities)
+    print(normalize_labels(goldlabels))
+    print("--------------------------------------------")
     predict_entities = label_to_entity(predictlabels)
     print(predict_entities)
+    print(normalize_labels(predictlabels))
     
