@@ -10,7 +10,7 @@ class Vocab(object):
         self._id2word = ['<pad>', '<unk>']
         self._wordid2freq = [10000, 10000]
         self._id2extword = ['<pad>', '<unk>']
-        self._id2label = ['<pad>']
+        self._id2label = [] # ['<pad>']
         for word, count in word_counter.most_common():
             if count > min_occur_count:
                 self._id2word.append(word)
@@ -18,6 +18,7 @@ class Vocab(object):
 
         for label, count in label_counter.most_common():
             self._id2label.append(label)
+        print("_id2label: ", self._id2label)
 
         reverse = lambda x: dict(zip(x, range(len(x))))
         self._word2id = reverse(self._id2word)
