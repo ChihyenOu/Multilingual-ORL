@@ -30,17 +30,17 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
     optimizer_lang = Optimizer(filter(lambda p: p.requires_grad, language_embedder.parameters()), config)
     optimizer_bert = AdamW(filter(lambda p: p.requires_grad, bert.parameters()), lr=5e-6, eps=1e-8)
     batch_num = int(np.ceil(len(data) / float(config.train_batch_size)))
-    # scheduler_bert = WarmupLinearSchedule(optimizer_bert, warmup_steps=0, t_total=config.train_iters * batch_num)
+    # scheduler_bert = WarmupLinearSchedule(optimizer_bert, warmup_steps=0, t_total=config.train_epochs * batch_num)
     scheduler_bert = get_linear_schedule_with_warmup(optimizer_bert, num_warmup_steps=0,
-                                                     num_training_steps=config.train_iters * batch_num)
+                                                     num_training_steps=config.train_epochs * batch_num)
 
 
     global_step = 0
     best_score = -1
     batch_num = int(np.ceil(len(data) / float(config.train_batch_size)))
-    for iter in range(config.train_iters):
+    for epoch in range(config.train_epochs): # iter -> epoch; config.train_iters -> config.train_epochs
         total_stats = Statistics()
-        print('Iteration: ' + str(iter))
+        print('Epoch: ' + str(epoch))
         batch_iter = 0
 
         for onebatch in data_iter(data, config.train_batch_size, True):
@@ -65,7 +65,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
             pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
                                 bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
             print("Hey")
-            print(pgnbert_hidden.size())
+            # print(pgnbert_hidden.size())
             labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
             
             loss, stat = labeler.compute_loss(labels, outmasks)
@@ -73,7 +73,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
             loss.backward()
 
             total_stats.update(stat)
-            total_stats.print_out(global_step, iter, batch_iter, batch_num)
+            total_stats.print_out(global_step, epoch, batch_iter, batch_num) # iter -> epoch
             batch_iter += 1
             if batch_iter % config.update_every == 0 or batch_iter == batch_num:
                 nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, labeler.model.parameters()), \
@@ -284,14 +284,15 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                 if dev_score > best_score:
                     print("Exceed best score: history = %.2f, current = %.2f" %(best_score, dev_score))
                     best_score = dev_score
-                    if config.save_after > 0 and iter > config.save_after:
+                    if config.save_after > 0 and epoch > config.save_after: # iter -> epoch
                         torch.save(labeler.model.state_dict(), config.save_model_path)
+                """
                 ### This is only for small sample dataset
                 else: ## Delete them after start training on huge dataset for many iterations
                     print("Dev score does not better than best score")
                     print("Current best score = %.2f, current dev score = %.2f" %(best_score, dev_score))
-                    if config.save_after > 0 and iter > config.save_after and iter == config.train_iters - 1:
-                        torch.save(labeler.model.state_dict(), config.save_model_path)
+                    if config.save_after > 0 and iter > config.save_after and iter == config.train_epochs - 1:
+                        torch.save(labeler.model.state_dict(), config.save_model_path)"""
 
 
 def evaluate(data, labeler, vocab, outputFile):
@@ -324,6 +325,7 @@ def evaluate(data, labeler, vocab, outputFile):
         lang_embedding = language_embedder(lang_ids)
         bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
         predict_labels = labeler.label(words, extwords, predicts, inmasks, bert_hidden)
+        # print("predicted labels: ", predict_labels)
         for result in batch_variable_srl(onebatch, predict_labels, vocab):
             printSRL(output, result)
             gold_entity_num, predict_entity_num, correct_entity_num, \
