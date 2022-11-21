@@ -232,8 +232,8 @@ class Configurable(object):
 	def num_buckets_test(self):
 		return self._config.getint('Run','num_buckets_test')
 	@property	
-	def train_iters(self):
-		return self._config.getint('Run','train_iters')
+	def train_epochs(self): # iters -> epochs
+		return self._config.getint('Run','train_epochs') # iters -> epochs
 	@property	
 	def train_batch_size(self):
 		return self._config.getint('Run','train_batch_size')

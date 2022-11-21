@@ -64,7 +64,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
             # PGNAdaptor    
             pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
                                 bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-            print("Hey")
+            # print("Hey")
             # print(pgnbert_hidden.size())
             labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
             
@@ -178,114 +178,13 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                        prop_predict_correct_target_num, prop_predict_target_num, 100.0 * prop_dev_target_P, \
                        dev_prop_target_score))
                 print()
-                '''
-                    Test
-                '''
-                
-                test_gold_num, test_predict_num, test_correct_num, \
-                test_gold_agent_num, test_predict_agent_num, test_correct_agent_num, \
-                test_gold_target_num, test_predict_target_num, test_correct_target_num, \
-                test_binary_gold_num, test_binary_predict_num, test_binary_gold_correct_num, test_binary_predict_correct_num, \
-                test_binary_gold_agent_num, test_binary_predict_agent_num, test_binary_gold_correct_agent_num, test_binary_predict_correct_agent_num, \
-                test_binary_gold_target_num, test_binary_predict_target_num, test_binary_gold_correct_target_num, test_binary_predict_correct_target_num, \
-                test_prop_gold_num, test_prop_predict_num, test_prop_gold_correct_num, test_prop_predict_correct_num, \
-                test_prop_gold_agent_num, test_prop_predict_agent_num, test_prop_gold_correct_agent_num, test_prop_predict_correct_agent_num, \
-                test_prop_gold_target_num, test_prop_predict_target_num, test_prop_gold_correct_target_num, test_prop_predict_correct_target_num \
-                    = evaluate(test_data, labeler, vocab, config.test_file + '.' + str(global_step))
-
-                test_score = 200.0 * test_correct_num / (test_gold_num + test_predict_num) \
-                    if test_correct_num > 0 else 0.0
-                print("Exact Test: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (test_correct_num, test_gold_num, \
-                       100.0 * test_correct_num / test_gold_num if test_correct_num > 0 else 0.0, \
-                       test_correct_num, test_predict_num, \
-                       100.0 * test_correct_num / test_predict_num if test_correct_num > 0 else 0.0, \
-                       test_score))
-
-                test_agent_score = 200.0 * test_correct_agent_num / (
-                        test_gold_agent_num + test_predict_agent_num) if test_correct_agent_num > 0 else 0.0
-                print("Exact Test Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (test_correct_agent_num, test_gold_agent_num,
-                       100.0 * test_correct_agent_num / test_gold_agent_num if test_correct_agent_num > 0 else 0.0, \
-                       test_correct_agent_num, test_predict_agent_num,
-                       100.0 * test_correct_agent_num / test_predict_agent_num if test_correct_agent_num > 0 else 0.0, \
-                       test_agent_score))
-
-                test_target_score = 200.0 * test_correct_target_num / (
-                        test_gold_target_num + test_predict_target_num) if test_correct_target_num > 0 else 0.0
-                print("Exact Test Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (test_correct_target_num, test_gold_target_num,
-                       100.0 * test_correct_target_num / test_gold_target_num if test_correct_target_num > 0 else 0.0, \
-                       test_correct_target_num, test_predict_target_num,
-                       100.0 * test_correct_target_num / test_predict_target_num if test_correct_target_num > 0 else 0.0, \
-                       test_target_score))
-                print()
-
-                binary_test_P = test_binary_predict_correct_num / test_binary_predict_num if test_binary_predict_num > 0 else 0.0
-                binary_test_R = test_binary_gold_correct_num / test_binary_gold_num if test_binary_gold_num > 0 else 0.0
-                binary_test_score = 200 * binary_test_P * binary_test_R / (
-                        binary_test_P + binary_test_R) if binary_test_P + binary_test_R > 0 else 0.0
-                print("Binary Test: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (test_binary_gold_correct_num, test_binary_gold_num, 100.0 * binary_test_R, \
-                       test_binary_predict_correct_num, test_binary_predict_num, 100.0 * binary_test_P, \
-                       binary_test_score))
-
-                binary_test_agent_P = test_binary_predict_correct_agent_num / test_binary_predict_agent_num if test_binary_predict_agent_num > 0 else 0.0
-                binary_test_agent_R = test_binary_gold_correct_agent_num / test_binary_gold_agent_num if test_binary_gold_agent_num > 0 else 0.0
-                binary_test_agent_score = 200 * binary_test_agent_P * binary_test_agent_R / (
-                        binary_test_agent_P + binary_test_agent_R) if binary_test_agent_P + binary_test_agent_R > 0 else 0.0
-                print("Binary Test Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (test_binary_gold_correct_agent_num, test_binary_gold_agent_num, 100.0 * binary_test_agent_R, \
-                       test_binary_predict_correct_agent_num, test_binary_predict_agent_num,
-                       100.0 * binary_test_agent_P, \
-                       binary_test_agent_score))
-
-                binary_test_target_P = test_binary_predict_correct_target_num / test_binary_predict_target_num if test_binary_predict_target_num > 0 else 0.0
-                binary_test_target_R = test_binary_gold_correct_target_num / test_binary_gold_target_num if test_binary_gold_target_num > 0 else 0.0
-                binary_test_target_score = 200 * binary_test_target_P * binary_test_target_R / (
-                        binary_test_target_P + binary_test_target_R) if binary_test_target_P + binary_test_target_R > 0 else 0.0
-                print("Binary Test Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (test_binary_gold_correct_target_num, test_binary_gold_target_num, 100.0 * binary_test_target_R, \
-                       test_binary_predict_correct_target_num, test_binary_predict_target_num,
-                       100.0 * binary_test_target_P, \
-                       binary_test_target_score))
-                print()
-
-                prop_test_P = test_prop_predict_correct_num / test_prop_predict_num if test_prop_predict_num > 0 else 0.0
-                prop_test_R = test_prop_gold_correct_num / test_prop_gold_num if test_prop_gold_num > 0 else 0.0
-                prop_test_score = 200 * prop_test_P * prop_test_R / (
-                        prop_test_P + prop_test_R) if prop_test_P + prop_test_R > 0 else 0.0
-                print("Prop Test: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
-                      (test_prop_gold_correct_num, test_prop_gold_num, 100.0 * prop_test_R, \
-                       test_prop_predict_correct_num, test_prop_predict_num, 100.0 * prop_test_P, \
-                       prop_test_score))
-
-                prop_test_agent_P = test_prop_predict_correct_agent_num / test_prop_predict_agent_num if test_prop_predict_agent_num > 0 else 0.0
-                prop_test_agent_R = test_prop_gold_correct_agent_num / test_prop_gold_agent_num if test_prop_gold_agent_num > 0 else 0.0
-                prop_test_agent_score = 200 * prop_test_agent_P * prop_test_agent_R / (
-                        prop_test_agent_P + prop_test_agent_R) if prop_test_agent_P + prop_test_agent_R > 0 else 0.0
-                print("prop Test Agent: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
-                      (test_prop_gold_correct_agent_num, test_prop_gold_agent_num, 100.0 * prop_test_agent_R, \
-                       test_prop_predict_correct_agent_num, test_prop_predict_agent_num,
-                       100.0 * prop_test_agent_P, \
-                       prop_test_agent_score))
-
-                prop_test_target_P = test_prop_predict_correct_target_num / test_prop_predict_target_num if test_prop_predict_target_num > 0 else 0.0
-                prop_test_target_R = test_prop_gold_correct_target_num / test_prop_gold_target_num if test_prop_gold_target_num > 0 else 0.0
-                prop_test_target_score = 200 * prop_test_target_P * prop_test_target_R / (
-                        prop_test_target_P + prop_test_target_R) if prop_test_target_P + prop_test_target_R > 0 else 0.0
-                print("Prop Test Target: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
-                      (test_prop_gold_correct_target_num, test_prop_gold_target_num,
-                       100.0 * prop_test_target_R, \
-                       test_prop_predict_correct_target_num, test_prop_predict_target_num,
-                       100.0 * prop_test_target_P, \
-                       prop_test_target_score))
 
                 if dev_score > best_score:
                     print("Exceed best score: history = %.2f, current = %.2f" %(best_score, dev_score))
                     best_score = dev_score
                     if config.save_after > 0 and epoch > config.save_after: # iter -> epoch
                         torch.save(labeler.model.state_dict(), config.save_model_path)
+                        TestDataForBestModel(test_data, labeler, vocab, config, global_step)
                 """
                 ### This is only for small sample dataset
                 else: ## Delete them after start training on huge dataset for many iterations
@@ -293,6 +192,110 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                     print("Current best score = %.2f, current dev score = %.2f" %(best_score, dev_score))
                     if config.save_after > 0 and iter > config.save_after and iter == config.train_epochs - 1:
                         torch.save(labeler.model.state_dict(), config.save_model_path)"""
+
+def TestDataForBestModel(test_data, labeler, vocab, config, global_step):
+    '''
+        Test
+    '''
+    
+    test_gold_num, test_predict_num, test_correct_num, \
+    test_gold_agent_num, test_predict_agent_num, test_correct_agent_num, \
+    test_gold_target_num, test_predict_target_num, test_correct_target_num, \
+    test_binary_gold_num, test_binary_predict_num, test_binary_gold_correct_num, test_binary_predict_correct_num, \
+    test_binary_gold_agent_num, test_binary_predict_agent_num, test_binary_gold_correct_agent_num, test_binary_predict_correct_agent_num, \
+    test_binary_gold_target_num, test_binary_predict_target_num, test_binary_gold_correct_target_num, test_binary_predict_correct_target_num, \
+    test_prop_gold_num, test_prop_predict_num, test_prop_gold_correct_num, test_prop_predict_correct_num, \
+    test_prop_gold_agent_num, test_prop_predict_agent_num, test_prop_gold_correct_agent_num, test_prop_predict_correct_agent_num, \
+    test_prop_gold_target_num, test_prop_predict_target_num, test_prop_gold_correct_target_num, test_prop_predict_correct_target_num \
+        = evaluate(test_data, labeler, vocab, config.test_file + '.' + str(global_step))
+
+    test_score = 200.0 * test_correct_num / (test_gold_num + test_predict_num) \
+        if test_correct_num > 0 else 0.0
+    print("Exact Test: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+            (test_correct_num, test_gold_num, \
+            100.0 * test_correct_num / test_gold_num if test_correct_num > 0 else 0.0, \
+            test_correct_num, test_predict_num, \
+            100.0 * test_correct_num / test_predict_num if test_correct_num > 0 else 0.0, \
+            test_score))
+
+    test_agent_score = 200.0 * test_correct_agent_num / (
+            test_gold_agent_num + test_predict_agent_num) if test_correct_agent_num > 0 else 0.0
+    print("Exact Test Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+            (test_correct_agent_num, test_gold_agent_num,
+            100.0 * test_correct_agent_num / test_gold_agent_num if test_correct_agent_num > 0 else 0.0, \
+            test_correct_agent_num, test_predict_agent_num,
+            100.0 * test_correct_agent_num / test_predict_agent_num if test_correct_agent_num > 0 else 0.0, \
+            test_agent_score))
+
+    test_target_score = 200.0 * test_correct_target_num / (
+            test_gold_target_num + test_predict_target_num) if test_correct_target_num > 0 else 0.0
+    print("Exact Test Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+            (test_correct_target_num, test_gold_target_num,
+            100.0 * test_correct_target_num / test_gold_target_num if test_correct_target_num > 0 else 0.0, \
+            test_correct_target_num, test_predict_target_num,
+            100.0 * test_correct_target_num / test_predict_target_num if test_correct_target_num > 0 else 0.0, \
+            test_target_score))
+    print()
+
+    binary_test_P = test_binary_predict_correct_num / test_binary_predict_num if test_binary_predict_num > 0 else 0.0
+    binary_test_R = test_binary_gold_correct_num / test_binary_gold_num if test_binary_gold_num > 0 else 0.0
+    binary_test_score = 200 * binary_test_P * binary_test_R / (
+            binary_test_P + binary_test_R) if binary_test_P + binary_test_R > 0 else 0.0
+    print("Binary Test: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+            (test_binary_gold_correct_num, test_binary_gold_num, 100.0 * binary_test_R, \
+            test_binary_predict_correct_num, test_binary_predict_num, 100.0 * binary_test_P, \
+            binary_test_score))
+
+    binary_test_agent_P = test_binary_predict_correct_agent_num / test_binary_predict_agent_num if test_binary_predict_agent_num > 0 else 0.0
+    binary_test_agent_R = test_binary_gold_correct_agent_num / test_binary_gold_agent_num if test_binary_gold_agent_num > 0 else 0.0
+    binary_test_agent_score = 200 * binary_test_agent_P * binary_test_agent_R / (
+            binary_test_agent_P + binary_test_agent_R) if binary_test_agent_P + binary_test_agent_R > 0 else 0.0
+    print("Binary Test Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+            (test_binary_gold_correct_agent_num, test_binary_gold_agent_num, 100.0 * binary_test_agent_R, \
+            test_binary_predict_correct_agent_num, test_binary_predict_agent_num,
+            100.0 * binary_test_agent_P, \
+            binary_test_agent_score))
+
+    binary_test_target_P = test_binary_predict_correct_target_num / test_binary_predict_target_num if test_binary_predict_target_num > 0 else 0.0
+    binary_test_target_R = test_binary_gold_correct_target_num / test_binary_gold_target_num if test_binary_gold_target_num > 0 else 0.0
+    binary_test_target_score = 200 * binary_test_target_P * binary_test_target_R / (
+            binary_test_target_P + binary_test_target_R) if binary_test_target_P + binary_test_target_R > 0 else 0.0
+    print("Binary Test Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+            (test_binary_gold_correct_target_num, test_binary_gold_target_num, 100.0 * binary_test_target_R, \
+            test_binary_predict_correct_target_num, test_binary_predict_target_num,
+            100.0 * binary_test_target_P, \
+            binary_test_target_score))
+    print()
+
+    prop_test_P = test_prop_predict_correct_num / test_prop_predict_num if test_prop_predict_num > 0 else 0.0
+    prop_test_R = test_prop_gold_correct_num / test_prop_gold_num if test_prop_gold_num > 0 else 0.0
+    prop_test_score = 200 * prop_test_P * prop_test_R / (
+            prop_test_P + prop_test_R) if prop_test_P + prop_test_R > 0 else 0.0
+    print("Prop Test: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
+            (test_prop_gold_correct_num, test_prop_gold_num, 100.0 * prop_test_R, \
+            test_prop_predict_correct_num, test_prop_predict_num, 100.0 * prop_test_P, \
+            prop_test_score))
+
+    prop_test_agent_P = test_prop_predict_correct_agent_num / test_prop_predict_agent_num if test_prop_predict_agent_num > 0 else 0.0
+    prop_test_agent_R = test_prop_gold_correct_agent_num / test_prop_gold_agent_num if test_prop_gold_agent_num > 0 else 0.0
+    prop_test_agent_score = 200 * prop_test_agent_P * prop_test_agent_R / (
+            prop_test_agent_P + prop_test_agent_R) if prop_test_agent_P + prop_test_agent_R > 0 else 0.0
+    print("prop Test Agent: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
+            (test_prop_gold_correct_agent_num, test_prop_gold_agent_num, 100.0 * prop_test_agent_R, \
+            test_prop_predict_correct_agent_num, test_prop_predict_agent_num,
+            100.0 * prop_test_agent_P, \
+            prop_test_agent_score))
+
+    prop_test_target_P = test_prop_predict_correct_target_num / test_prop_predict_target_num if test_prop_predict_target_num > 0 else 0.0
+    prop_test_target_R = test_prop_gold_correct_target_num / test_prop_gold_target_num if test_prop_gold_target_num > 0 else 0.0
+    prop_test_target_score = 200 * prop_test_target_P * prop_test_target_R / (
+            prop_test_target_P + prop_test_target_R) if prop_test_target_P + prop_test_target_R > 0 else 0.0
+    print("Prop Test Target: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
+            (test_prop_gold_correct_target_num, test_prop_gold_target_num,
+            100.0 * prop_test_target_R, \
+            test_prop_predict_correct_target_num, test_prop_predict_target_num,
+            100.0 * prop_test_target_P, \
+            prop_test_target_score))
 
 
 def evaluate(data, labeler, vocab, outputFile):
