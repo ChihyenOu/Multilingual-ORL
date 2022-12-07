@@ -10,11 +10,13 @@ class Vocab(object):
         self._id2word = ['<pad>', '<unk>']
         self._wordid2freq = [10000, 10000]
         self._id2extword = ['<pad>', '<unk>']
-        self._id2label = [] # ['<pad>']
+        self._id2label = ['<pad>'] # remove ['<pad>']
+
+        # If n is omitted or None, most_common() returns all elements in the counter
         for word, count in word_counter.most_common():
             if count > min_occur_count:
                 self._id2word.append(word)
-                self._wordid2freq.append(count)
+                self._wordid2freq.append(count) 
 
         for label, count in label_counter.most_common():
             self._id2label.append(label)
@@ -25,12 +27,13 @@ class Vocab(object):
         if len(self._word2id) != len(self._id2word):
             print("serious bug: words dumplicated, please check!")
 
-        self._label2id = reverse(self._id2label)
+        ## ADD 
+        # reverse_label = lambda x: dict(zip(x, range(1, len(x)+1))) ## ADD 
+        self._label2id = reverse(self._id2label) # old
+        # self._label2id = reverse_label(self._id2label) # modify
         if len(self._label2id) != len(self._id2label):
             print("serious bug: ner labels dumplicated, please check!")
         
-        ## ADD 
-        reverse = lambda x: dict(zip(x, range(len(x)))) ## ADD 
         self._extword2id = reverse(self._id2extword) ## ADD 
 
         print("Vocab info: #words %d, #labels %d" % (self.vocab_size, self.label_size))
@@ -143,7 +146,7 @@ class Vocab(object):
 
     @property
     def label_size(self):
-        return len(self._id2label)
+        return len(self._id2label) # +1 # Change
 
 
 def creat_vocab(corpusFile, min_occur_count):
