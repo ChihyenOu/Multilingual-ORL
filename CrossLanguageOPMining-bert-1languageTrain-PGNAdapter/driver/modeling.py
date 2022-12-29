@@ -887,7 +887,6 @@ class BertModel(BertPreTrainedModel):
         bert_hidden = torch.bmm(bert_pieces, encoded_layers[self.bert_layers - 1])
 
         if bert_pieces is not None:
-            print("HELLO ITS MEEEEE!!!")
             return bert_hidden
         else:
             return encoded_layers, pooled_output

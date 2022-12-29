@@ -174,6 +174,7 @@ class CRF(nn.Module):
         mask = mask.float()
 
         # Start transition score
+        # print("Tag: ", tags)
         llh = self.start_transitions[tags[0]]  # (batch_size,)
 
         for i in range(seq_length - 1):

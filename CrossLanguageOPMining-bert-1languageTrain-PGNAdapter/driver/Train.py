@@ -89,16 +89,30 @@ record_prop_test_target_scores = []
 record_prop_test_target_recalls = []
 record_prop_test_target_precisions = []
 
+loss_record = []
 
 def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder):
-    optimizer = Optimizer(filter(lambda p: p.requires_grad, labeler.model.parameters()), config)
-    optimizer_lang = Optimizer(filter(lambda p: p.requires_grad, language_embedder.parameters()), config)
+    # PREV VERSION    
+    # optimizer = Optimizer(filter(lambda p: p.requires_grad, labeler.model.parameters()), config)
+    # optimizer_lang = Optimizer(filter(lambda p: p.requires_grad, language_embedder.parameters()), config)
+
+    # NEW VERSION
+    optimizer_label = torch.optim.AdamW(filter(lambda p: p.requires_grad, labeler.model.parameters()), lr=config.learning_rate, \
+                                                betas=(config.beta_1, config.beta_2), eps=config.epsilon)    
+    decay, decay_step = config.decay, config.decay_steps
+    l = lambda epoch: decay ** (epoch // decay_step)
+    scheduler_label = torch.optim.lr_scheduler.LambdaLR(optimizer_label, lr_lambda=l)
+
+    optimizer_lang = torch.optim.AdamW(filter(lambda p: p.requires_grad, language_embedder.parameters()), lr=config.learning_rate, \
+                                                betas=(config.beta_1, config.beta_2), eps=config.epsilon)
+    scheduler_lang = torch.optim.lr_scheduler.LambdaLR(optimizer_lang, lr_lambda=l)
+    ####
+    
     # change from AdamW to torch.optim.AdamW
     optimizer_bert = torch.optim.AdamW(filter(lambda p: p.requires_grad, bert.parameters()), lr=5e-6, eps=1e-8)
     batch_num = int(np.ceil(len(data) / float(config.train_batch_size)))
     # scheduler_bert = WarmupLinearSchedule(optimizer_bert, warmup_steps=0, t_total=config.train_epochs * batch_num)
-    scheduler_bert = get_linear_schedule_with_warmup(optimizer_bert, num_warmup_steps=0,
-                                                     num_training_steps=config.train_epochs * batch_num)
+    scheduler_bert = get_linear_schedule_with_warmup(optimizer_bert, num_warmup_steps=0, num_training_steps=config.train_epochs * batch_num)
 
 
     global_step = 0
@@ -109,206 +123,268 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
         print('Epoch: ' + str(epoch))
         batch_iter = 0
         ii = 1
-        for onebatch in data_iter(data, config.train_batch_size, True):
-            print("Iteration: ", ii)
-            ii += 1
-            
-            words, extwords, predicts, inmasks, labels, outmasks, \
-            bert_indices_tensor, bert_segments_tensor, bert_pieces_tensor, lang_ids = \
-                batch_data_variable(onebatch, vocab)
-            
-            labeler.model.train()
-            language_embedder.train()
-            bert.train()
-            if config.use_cuda:
-                bert_indices_tensor = bert_indices_tensor.cuda()
-                bert_segments_tensor = bert_segments_tensor.cuda()
-                bert_pieces_tensor = bert_pieces_tensor.cuda()
-            lang_embedding = language_embedder(lang_ids)
-            
-            # BERTModel PGNAdaptor
-            # bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
-                                # bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-            # labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
-        
-            # PGNAdaptor    
-            
-            pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
-                                bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-            # print("Hey")
-            # print(pgnbert_hidden.size())
-            labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
-            
-            loss, stat = labeler.compute_loss(labels, outmasks)
-            loss = loss / config.update_every
-            print("loss: ", loss)
-            loss.backward()
 
-            total_stats.update(stat)
-            total_stats.print_out(global_step, epoch, batch_iter, batch_num) # iter -> epoch
-            batch_iter += 1
-            
-            if batch_iter % config.update_every == 0 or batch_iter == batch_num:
+        # TRAIN 2
+        language_embedder.train()
+        bert.train()
+        labeler.model.train()
+
+        for onebatch in data_iter(data, config.train_batch_size, True):
+                print("Iteration: ", ii)
+                ii += 1
+                
+                words, extwords, predicts, inmasks, labels, outmasks, \
+                bert_indices_tensor, bert_segments_tensor, bert_pieces_tensor, lang_ids = \
+                        batch_data_variable(onebatch, vocab)
+                
+                # PREV Version
+                # TRAIN 1
+                #labeler.model.train()
+                #language_embedder.train()
+                #bert.train()
+
+                
+                # ZERO_GRAD 2
+                #language_embedder.zero_grad() ## ADD ZERO_GRAD
+                #bert.zero_grad() ## ADD ZERO_GRAD
+                #labeler.model.zero_grad() ## ADD ZERO_GRAD
+
+                # ZERO_GRAD 3
+                #optimizer_lang.zero_grad() ## ADD ZERO_GRAD
+                #optimizer_bert.zero_grad() ## ADD ZERO_GRAD
+                #optimizer_label.zero_grad() ## ADD ZERO_GRAD
+                
+                if config.use_cuda:
+                        bert_indices_tensor = bert_indices_tensor.cuda()
+                        bert_segments_tensor = bert_segments_tensor.cuda()
+                        bert_pieces_tensor = bert_pieces_tensor.cuda()
+
+                # Forward pass
+                lang_embedding = language_embedder(lang_ids)
+                
+                # BERTModel PGNAdaptor
+                # bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                        # bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+                # labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
+                
+                # PGNAdaptor
+                pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                        bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+                # print(pgnbert_hidden.size())
+                labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
+                
+                loss, stat = labeler.compute_loss(labels, outmasks)
+                loss = loss / config.update_every
+                print("loss: ", loss.item())
+                loss_record.append(loss.item())
+                
+
+                # ZERO_GRAD 1
+                #language_embedder.zero_grad() ## ADD ZERO_GRAD
+                #bert.zero_grad() ## ADD ZERO_GRAD
+                #labeler.model.zero_grad() ## ADD ZERO_GRAD
+
+                # ZERO_GRAD 4
+                optimizer_lang.zero_grad() ## ADD ZERO_GRAD
+                optimizer_bert.zero_grad() ## ADD ZERO_GRAD
+                optimizer_label.zero_grad() ## ADD ZERO_GRAD
+
+                # print("optimizer_label params: ", optimizer_label.param_groups)
+
+                # Backward pass
+                loss.backward()
                 nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, labeler.model.parameters()), \
-                                        max_norm=config.clip)
-                #optimizer.step() #cause result to be zero, but no one use this variable??? this is for labeler??
+                                                max_norm=config.clip)
+                nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, bert.parameters()), \
+                                                max_norm=config.clip)
+                nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, language_embedder.parameters()), \
+                                                max_norm=config.clip)
+                                                
+                total_stats.update(stat)
+                total_stats.print_out(global_step, epoch, batch_iter, batch_num) # iter -> epoch
+
+                # STEP 2
                 optimizer_lang.step()
                 optimizer_bert.step()
-                labeler.model.zero_grad()
-                optimizer_lang.zero_grad()
-                optimizer_bert.zero_grad()
-                global_step += 1
+                optimizer_label.step() ## ADD step() to update parameters after each iteration
+                batch_iter += 1
+                
+                if batch_iter % config.update_every == 0 or batch_iter == batch_num:
+                        # nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, labeler.model.parameters()), \
+                                              #  max_norm=config.clip)
+                        #optimizer.step() #cause result to be zero, but no one use this variable??? this is for labeler??
+                        #optimizer_lang.step()
+                        #optimizer_bert.zero_grad()
+                        #optimizer_bert.step()
+                        #labeler.model.zero_grad()
+                        #optimizer_lang.zero_grad()
+                        ##optimizer_bert.zero_grad()
 
-            
-            if batch_iter % config.validate_every == 0 or batch_iter == batch_num:
-                gold_num, predict_num, correct_num, \
-                gold_agent_num, predict_agent_num, correct_agent_num, \
-                gold_target_num, predict_target_num, correct_target_num, \
-                binary_gold_num, binary_predict_num, binary_gold_correct_num, binary_predict_correct_num, \
-                binary_gold_agent_num, binary_predict_agent_num, binary_gold_correct_agent_num, binary_predict_correct_agent_num, \
-                binary_gold_target_num, binary_predict_target_num, binary_gold_correct_target_num, binary_predict_correct_target_num, \
-                prop_gold_num, prop_predict_num, prop_gold_correct_num, prop_predict_correct_num, \
-                prop_gold_agent_num, prop_predict_agent_num, prop_gold_correct_agent_num, prop_predict_correct_agent_num, \
-                prop_gold_target_num, prop_predict_target_num, prop_gold_correct_target_num, prop_predict_correct_target_num \
-                    = evaluate(dev_data, labeler, vocab, config.dev_file + '.' + str(global_step))
+                        # STEP 1
+                        #optimizer_lang.step()
+                        #optimizer_bert.step()
+                        #optimizer_label.step() ## ADD step() to update parameters after each iteration
 
-                print("Global step: ", global_step)
+                        # Update scheduler for learning rate at the end of each epoch AND after optimizer.step()
+                        # print("optimizer_label params: ", optimizer_label.param_groups)
 
-                logging.info("Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
-            
-                dev_score = 200.0 * correct_num / (gold_num + predict_num) if correct_num > 0 else 0.0
-                exact_dev_recall = 100.0 * correct_num / gold_num if correct_num > 0 else 0.0
-                exact_dev_precision = 100.0 * correct_num / predict_num if correct_num > 0 else 0.0
-                logging.info("Exact Dev: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (correct_num, gold_num, exact_dev_recall, \
-                       correct_num, predict_num, exact_dev_precision, \
-                       dev_score))
-                print("Exact Dev: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (correct_num, gold_num, exact_dev_recall, \
-                       correct_num, predict_num, exact_dev_precision, \
-                       dev_score))
-                record_exact_dev_scores.append(dev_score)
-                record_exact_dev_recalls.append(exact_dev_recall)
-                record_exact_dev_precisions.append(exact_dev_precision)
-
-                dev_agent_score = 200.0 * correct_agent_num / (
-                        gold_agent_num + predict_agent_num) if correct_agent_num > 0 else 0.0
-                exact_dev_agent_recall = 100.0 * correct_agent_num / gold_agent_num if correct_agent_num > 0 else 0.0
-                exact_dev_agent_precision = 100.0 * correct_agent_num / predict_agent_num if correct_agent_num > 0 else 0.0
-                logging.info("Exact Dev Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (correct_agent_num, gold_agent_num,
-                       exact_dev_agent_recall, \
-                       correct_agent_num, predict_agent_num,
-                       exact_dev_agent_precision, \
-                       dev_agent_score))
-                record_exact_dev_agent_scores.append(dev_agent_score)
-                record_exact_dev_agent_recalls.append(exact_dev_agent_recall)
-                record_exact_dev_agent_precisions.append(exact_dev_agent_precision)
-
-                dev_target_score = 200.0 * correct_target_num / (
-                        gold_target_num + predict_target_num) if correct_target_num > 0 else 0.0
-                exact_dev_target_recall = 100.0 * correct_target_num / gold_target_num if correct_target_num > 0 else 0.0
-                exact_dev_target_precision = 100.0 * correct_target_num / predict_target_num if correct_target_num > 0 else 0.0
-                logging.info("Exact Dev Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (correct_target_num, gold_target_num,
-                       exact_dev_target_recall, \
-                       correct_target_num, predict_target_num,
-                       exact_dev_target_precision, \
-                       dev_target_score))
-                record_exact_dev_target_scores.append(dev_target_score)
-                record_exact_dev_target_recalls.append(exact_dev_target_recall)
-                record_exact_dev_target_precisions.append(exact_dev_target_precision)
-                #print()
-
-                binary_dev_P = binary_predict_correct_num / binary_predict_num if binary_predict_num > 0 else 0.0
-                binary_dev_R = binary_gold_correct_num / binary_gold_num if binary_gold_num > 0 else 0.0
-                dev_binary_score = 200 * binary_dev_P * binary_dev_R / (
-                        binary_dev_P + binary_dev_R) if binary_dev_P + binary_dev_R > 0 else 0.0
-                logging.info("Binary Dev: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (binary_gold_correct_num, binary_gold_num, 100.0 * binary_dev_R, \
-                       binary_predict_correct_num, binary_predict_num, 100.0 * binary_dev_P, \
-                       dev_binary_score))
-                record_binary_dev_scores.append(dev_binary_score)
-                record_binary_dev_recalls.append(100.0 * binary_dev_R)
-                record_binary_dev_precisions.append(100.0 * binary_dev_P)
-
-                binary_dev_agent_P = binary_predict_correct_agent_num / binary_predict_agent_num if binary_predict_agent_num > 0 else 0.0
-                binary_dev_agent_R = binary_gold_correct_agent_num / binary_gold_agent_num if binary_gold_agent_num > 0 else 0.0
-                dev_binary_agent_score = 200 * binary_dev_agent_P * binary_dev_agent_R / (
-                        binary_dev_agent_P + binary_dev_agent_R) if binary_dev_agent_P + binary_dev_agent_R > 0 else 0.0
-                logging.info("Binary Dev Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (binary_gold_correct_agent_num, binary_gold_agent_num, 100.0 * binary_dev_agent_R, \
-                       binary_predict_correct_agent_num, binary_predict_agent_num, 100.0 * binary_dev_agent_P, \
-                       dev_binary_agent_score))
-                record_binary_dev_agent_scores.append(dev_binary_agent_score)
-                record_binary_dev_agent_recalls.append(100.0 * binary_dev_agent_R)
-                record_binary_dev_agent_precisions.append(100.0 * binary_dev_agent_P)
-
-                binary_dev_target_P = binary_predict_correct_target_num / binary_predict_target_num if binary_predict_target_num > 0 else 0.0
-                binary_dev_target_R = binary_gold_correct_target_num / binary_gold_target_num if binary_gold_target_num > 0 else 0.0
-                dev_binary_target_score = 200 * binary_dev_target_P * binary_dev_target_R / (
-                        binary_dev_target_P + binary_dev_target_R) if binary_dev_target_P + binary_dev_target_R > 0 else 0.0
-                logging.info("Binary Dev Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
-                      (binary_gold_correct_target_num, binary_gold_target_num, 100.0 * binary_dev_target_R, \
-                       binary_predict_correct_target_num, binary_predict_target_num, 100.0 * binary_dev_target_P, \
-                       dev_binary_target_score))
-                record_binary_dev_target_scores.append(dev_binary_target_score)
-                record_binary_dev_target_recalls.append(100.0 * binary_dev_target_R)
-                record_binary_dev_target_precisions.append(100.0 * binary_dev_target_P)
-                #print()
-
-                prop_dev_P = prop_predict_correct_num / prop_predict_num if prop_predict_num > 0 else 0.0
-                prop_dev_R = prop_gold_correct_num / prop_gold_num if prop_gold_num > 0 else 0.0
-                dev_prop_score = 200 * prop_dev_P * prop_dev_R / (
-                        prop_dev_P + prop_dev_R) if prop_dev_P + prop_dev_R > 0 else 0.0
-                logging.info("Prop Dev: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
-                      (prop_gold_correct_num, prop_gold_num, 100.0 * prop_dev_R, \
-                       prop_predict_correct_num, prop_predict_num, 100.0 * prop_dev_P, \
-                       dev_prop_score))
-                record_prop_dev_scores.append(dev_prop_score)
-                record_prop_dev_recalls.append(100.0 * prop_dev_R)
-                record_prop_dev_precisions.append(100.0 * prop_dev_P)
-
-                prop_dev_agent_P = prop_predict_correct_agent_num / prop_predict_agent_num if prop_predict_agent_num > 0 else 0.0
-                prop_dev_agent_R = prop_gold_correct_agent_num / prop_gold_agent_num if prop_gold_agent_num > 0 else 0.0
-                dev_prop_agent_score = 200 * prop_dev_agent_P * prop_dev_agent_R / (
-                        prop_dev_agent_P + prop_dev_agent_R) if prop_dev_agent_P + prop_dev_agent_R > 0 else 0.0
-                logging.info("Prop Dev Agent: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
-                      (prop_gold_correct_agent_num, prop_gold_agent_num, 100.0 * prop_dev_agent_R, \
-                       prop_predict_correct_agent_num, prop_predict_agent_num, 100.0 * prop_dev_agent_P, \
-                       dev_prop_agent_score))
-                record_prop_dev_agent_scores.append(dev_prop_agent_score)
-                record_prop_dev_agent_recalls.append(100.0 * prop_dev_agent_R)
-                record_prop_dev_agent_precisions.append(100.0 * prop_dev_agent_P)
-
-                prop_dev_target_P = prop_predict_correct_target_num / prop_predict_target_num if prop_predict_target_num > 0 else 0.0
-                prop_dev_target_R = prop_gold_correct_target_num / prop_gold_target_num if prop_gold_target_num > 0 else 0.0
-                dev_prop_target_score = 200 * prop_dev_target_P * prop_dev_target_R / (
-                        prop_dev_target_P + prop_dev_target_R) if prop_dev_target_P + prop_dev_target_R > 0 else 0.0
-                logging.info("Prop Dev Target: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
-                      (prop_gold_correct_target_num, prop_gold_target_num, 100.0 * prop_dev_target_R, \
-                       prop_predict_correct_target_num, prop_predict_target_num, 100.0 * prop_dev_target_P, \
-                       dev_prop_target_score))
-                record_prop_dev_target_scores.append(dev_prop_target_score)
-                record_prop_dev_target_recalls.append(100.0 * prop_dev_target_R)
-                record_prop_dev_target_precisions.append(100.0 * prop_dev_target_P)
-                # print()
+                        # Schduler step
+                        scheduler_lang.step()
+                        scheduler_bert.step()
+                        scheduler_label.step()
+                        #print("epoch: ", epoch, "lang lr: ", scheduler_lang.get_last_lr())
+                        #print("epoch: ", epoch, "bert lr: ", scheduler_bert.get_last_lr())
+                        #print("epoch: ", epoch, "label lr: ", scheduler_label.get_last_lr())
+                        global_step += 1
 
                 
-                #if dev_score > best_score:
-                 #   print("Exceed best score: history = %.2f, current = %.2f" %(best_score, dev_score))
-                  #  logging.info("Find better model in Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
-                   # logging.info("Exceed best score: history = %.2f, current = %.2f" %(best_score, dev_score))
-                    #
-                    #best_score = dev_score
-                    #if config.save_after > 0: # and epoch > config.save_after: # iter -> epoch
-                     #   logging.info("Test the model in Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
-                      #  torch.save(labeler.model.state_dict(), config.save_model_path)
-                       # TestDataForBestModel(test_data, labeler, vocab, config, global_step)
+                if batch_iter % config.validate_every == 0 or batch_iter == batch_num:
+                        gold_num, predict_num, correct_num, \
+                        gold_agent_num, predict_agent_num, correct_agent_num, \
+                        gold_target_num, predict_target_num, correct_target_num, \
+                        binary_gold_num, binary_predict_num, binary_gold_correct_num, binary_predict_correct_num, \
+                        binary_gold_agent_num, binary_predict_agent_num, binary_gold_correct_agent_num, binary_predict_correct_agent_num, \
+                        binary_gold_target_num, binary_predict_target_num, binary_gold_correct_target_num, binary_predict_correct_target_num, \
+                        prop_gold_num, prop_predict_num, prop_gold_correct_num, prop_predict_correct_num, \
+                        prop_gold_agent_num, prop_predict_agent_num, prop_gold_correct_agent_num, prop_predict_correct_agent_num, \
+                        prop_gold_target_num, prop_predict_target_num, prop_gold_correct_target_num, prop_predict_correct_target_num \
+                        = evaluate(dev_data, labeler, vocab, config.dev_file + '.' + str(global_step))
+
+                        print("Global step: ", global_step)
+
+                        logging.info("Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
                 
-        
-                
-        
+                        dev_score = 200.0 * correct_num / (gold_num + predict_num) if correct_num > 0 else 0.0
+                        exact_dev_recall = 100.0 * correct_num / gold_num if correct_num > 0 else 0.0
+                        exact_dev_precision = 100.0 * correct_num / predict_num if correct_num > 0 else 0.0
+                        logging.info("Exact Dev: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (correct_num, gold_num, exact_dev_recall, \
+                        correct_num, predict_num, exact_dev_precision, \
+                        dev_score))
+                        print("Exact Dev: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (correct_num, gold_num, exact_dev_recall, \
+                        correct_num, predict_num, exact_dev_precision, \
+                        dev_score))
+                        record_exact_dev_scores.append(dev_score)
+                        record_exact_dev_recalls.append(exact_dev_recall)
+                        record_exact_dev_precisions.append(exact_dev_precision)
+
+                        dev_agent_score = 200.0 * correct_agent_num / (
+                                gold_agent_num + predict_agent_num) if correct_agent_num > 0 else 0.0
+                        exact_dev_agent_recall = 100.0 * correct_agent_num / gold_agent_num if correct_agent_num > 0 else 0.0
+                        exact_dev_agent_precision = 100.0 * correct_agent_num / predict_agent_num if correct_agent_num > 0 else 0.0
+                        logging.info("Exact Dev Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (correct_agent_num, gold_agent_num,
+                        exact_dev_agent_recall, \
+                        correct_agent_num, predict_agent_num,
+                        exact_dev_agent_precision, \
+                        dev_agent_score))
+                        record_exact_dev_agent_scores.append(dev_agent_score)
+                        record_exact_dev_agent_recalls.append(exact_dev_agent_recall)
+                        record_exact_dev_agent_precisions.append(exact_dev_agent_precision)
+
+                        dev_target_score = 200.0 * correct_target_num / (
+                                gold_target_num + predict_target_num) if correct_target_num > 0 else 0.0
+                        exact_dev_target_recall = 100.0 * correct_target_num / gold_target_num if correct_target_num > 0 else 0.0
+                        exact_dev_target_precision = 100.0 * correct_target_num / predict_target_num if correct_target_num > 0 else 0.0
+                        logging.info("Exact Dev Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (correct_target_num, gold_target_num,
+                        exact_dev_target_recall, \
+                        correct_target_num, predict_target_num,
+                        exact_dev_target_precision, \
+                        dev_target_score))
+                        record_exact_dev_target_scores.append(dev_target_score)
+                        record_exact_dev_target_recalls.append(exact_dev_target_recall)
+                        record_exact_dev_target_precisions.append(exact_dev_target_precision)
+                        #print()
+
+                        binary_dev_P = binary_predict_correct_num / binary_predict_num if binary_predict_num > 0 else 0.0
+                        binary_dev_R = binary_gold_correct_num / binary_gold_num if binary_gold_num > 0 else 0.0
+                        dev_binary_score = 200 * binary_dev_P * binary_dev_R / (
+                                binary_dev_P + binary_dev_R) if binary_dev_P + binary_dev_R > 0 else 0.0
+                        logging.info("Binary Dev: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (binary_gold_correct_num, binary_gold_num, 100.0 * binary_dev_R, \
+                        binary_predict_correct_num, binary_predict_num, 100.0 * binary_dev_P, \
+                        dev_binary_score))
+                        record_binary_dev_scores.append(dev_binary_score)
+                        record_binary_dev_recalls.append(100.0 * binary_dev_R)
+                        record_binary_dev_precisions.append(100.0 * binary_dev_P)
+
+                        binary_dev_agent_P = binary_predict_correct_agent_num / binary_predict_agent_num if binary_predict_agent_num > 0 else 0.0
+                        binary_dev_agent_R = binary_gold_correct_agent_num / binary_gold_agent_num if binary_gold_agent_num > 0 else 0.0
+                        dev_binary_agent_score = 200 * binary_dev_agent_P * binary_dev_agent_R / (
+                                binary_dev_agent_P + binary_dev_agent_R) if binary_dev_agent_P + binary_dev_agent_R > 0 else 0.0
+                        logging.info("Binary Dev Agent: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (binary_gold_correct_agent_num, binary_gold_agent_num, 100.0 * binary_dev_agent_R, \
+                        binary_predict_correct_agent_num, binary_predict_agent_num, 100.0 * binary_dev_agent_P, \
+                        dev_binary_agent_score))
+                        record_binary_dev_agent_scores.append(dev_binary_agent_score)
+                        record_binary_dev_agent_recalls.append(100.0 * binary_dev_agent_R)
+                        record_binary_dev_agent_precisions.append(100.0 * binary_dev_agent_P)
+
+                        binary_dev_target_P = binary_predict_correct_target_num / binary_predict_target_num if binary_predict_target_num > 0 else 0.0
+                        binary_dev_target_R = binary_gold_correct_target_num / binary_gold_target_num if binary_gold_target_num > 0 else 0.0
+                        dev_binary_target_score = 200 * binary_dev_target_P * binary_dev_target_R / (
+                                binary_dev_target_P + binary_dev_target_R) if binary_dev_target_P + binary_dev_target_R > 0 else 0.0
+                        logging.info("Binary Dev Target: Recall = %d/%d = %.2f, Precision = %d/%d =%.2f, F-measure = %.2f" % \
+                        (binary_gold_correct_target_num, binary_gold_target_num, 100.0 * binary_dev_target_R, \
+                        binary_predict_correct_target_num, binary_predict_target_num, 100.0 * binary_dev_target_P, \
+                        dev_binary_target_score))
+                        record_binary_dev_target_scores.append(dev_binary_target_score)
+                        record_binary_dev_target_recalls.append(100.0 * binary_dev_target_R)
+                        record_binary_dev_target_precisions.append(100.0 * binary_dev_target_P)
+                        #print()
+
+                        prop_dev_P = prop_predict_correct_num / prop_predict_num if prop_predict_num > 0 else 0.0
+                        prop_dev_R = prop_gold_correct_num / prop_gold_num if prop_gold_num > 0 else 0.0
+                        dev_prop_score = 200 * prop_dev_P * prop_dev_R / (
+                                prop_dev_P + prop_dev_R) if prop_dev_P + prop_dev_R > 0 else 0.0
+                        logging.info("Prop Dev: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
+                        (prop_gold_correct_num, prop_gold_num, 100.0 * prop_dev_R, \
+                        prop_predict_correct_num, prop_predict_num, 100.0 * prop_dev_P, \
+                        dev_prop_score))
+                        record_prop_dev_scores.append(dev_prop_score)
+                        record_prop_dev_recalls.append(100.0 * prop_dev_R)
+                        record_prop_dev_precisions.append(100.0 * prop_dev_P)
+
+                        prop_dev_agent_P = prop_predict_correct_agent_num / prop_predict_agent_num if prop_predict_agent_num > 0 else 0.0
+                        prop_dev_agent_R = prop_gold_correct_agent_num / prop_gold_agent_num if prop_gold_agent_num > 0 else 0.0
+                        dev_prop_agent_score = 200 * prop_dev_agent_P * prop_dev_agent_R / (
+                                prop_dev_agent_P + prop_dev_agent_R) if prop_dev_agent_P + prop_dev_agent_R > 0 else 0.0
+                        logging.info("Prop Dev Agent: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
+                        (prop_gold_correct_agent_num, prop_gold_agent_num, 100.0 * prop_dev_agent_R, \
+                        prop_predict_correct_agent_num, prop_predict_agent_num, 100.0 * prop_dev_agent_P, \
+                        dev_prop_agent_score))
+                        record_prop_dev_agent_scores.append(dev_prop_agent_score)
+                        record_prop_dev_agent_recalls.append(100.0 * prop_dev_agent_R)
+                        record_prop_dev_agent_precisions.append(100.0 * prop_dev_agent_P)
+
+                        prop_dev_target_P = prop_predict_correct_target_num / prop_predict_target_num if prop_predict_target_num > 0 else 0.0
+                        prop_dev_target_R = prop_gold_correct_target_num / prop_gold_target_num if prop_gold_target_num > 0 else 0.0
+                        dev_prop_target_score = 200 * prop_dev_target_P * prop_dev_target_R / (
+                                prop_dev_target_P + prop_dev_target_R) if prop_dev_target_P + prop_dev_target_R > 0 else 0.0
+                        logging.info("Prop Dev Target: Recall = %.2f/%d = %.2f, Precision = %.2f/%d =%.2f, F-measure = %.2f" % \
+                        (prop_gold_correct_target_num, prop_gold_target_num, 100.0 * prop_dev_target_R, \
+                        prop_predict_correct_target_num, prop_predict_target_num, 100.0 * prop_dev_target_P, \
+                        dev_prop_target_score))
+                        record_prop_dev_target_scores.append(dev_prop_target_score)
+                        record_prop_dev_target_recalls.append(100.0 * prop_dev_target_R)
+                        record_prop_dev_target_precisions.append(100.0 * prop_dev_target_P)
+                        # print()
+
+                        
+                        if dev_score > best_score:
+                                print("Exceed best score: history = %.2f, current = %.2f" %(best_score, dev_score))
+                                logging.info("Find better model in Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
+                                logging.info("Exceed best score: history = %.2f, current = %.2f" %(best_score, dev_score))
+                                
+                                best_score = dev_score
+                                if config.save_after > 0: # and epoch > config.save_after: # iter -> epoch
+                                        logging.info("Test the model in Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
+                                        torch.save(labeler.model.state_dict(), config.save_model_path)
+                                        TestDataForBestModel(test_data, labeler, vocab, config, global_step)
+                            
+    logging.info("Loss scores: %s", loss_record)
     logging.info("record_exact_dev_scores: %s", record_exact_dev_scores)
     logging.info("record_exact_dev_recalls: %s", record_exact_dev_recalls)
     logging.info("record_exact_dev_precisions: %s", record_exact_dev_precisions)
@@ -364,6 +440,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
     logging.info("record_prop_test_target_scores: %s", record_prop_test_target_scores)
     logging.info("record_prop_test_target_recalls: %s", record_prop_test_target_recalls)
     logging.info("record_prop_test_target_precisions: %s", record_prop_test_target_precisions)
+
 
 def TestDataForBestModel(test_data, labeler, vocab, config, global_step):
     '''
