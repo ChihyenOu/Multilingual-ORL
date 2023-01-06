@@ -109,8 +109,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
     batch_num = int(np.ceil(len(data) / float(config.train_batch_size)))
     # scheduler_bert = WarmupLinearSchedule(optimizer_bert, warmup_steps=0, t_total=config.train_epochs * batch_num)
     scheduler_bert = get_linear_schedule_with_warmup(optimizer_bert, num_warmup_steps=0, num_training_steps=config.train_epochs * batch_num)
-
-
+    
     global_step = 0
     best_score = -1
     # batch_num = int(np.ceil(len(data) / float(config.train_batch_size)))
@@ -120,10 +119,11 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
         batch_iter = 0
         ii = 1
 
+        print("Initialize train()")
         language_embedder.train()
         bert.train()
         labeler.model.train()
-
+        
         for onebatch in data_iter(data, config.train_batch_size, True):
                 print("Iteration: ", ii)
                 ii += 1
@@ -138,6 +138,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                         bert_segments_tensor = bert_segments_tensor.cuda()
                         bert_pieces_tensor = bert_pieces_tensor.cuda()
 
+                print("Forward Pass!")
                 # Forward pass
                 lang_embedding = language_embedder(lang_ids)
                 
@@ -152,17 +153,21 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                 # print(pgnbert_hidden.size())
                 labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
                 
+                """
+                print("Compute Loss!")
                 loss, stat = labeler.compute_loss(labels, outmasks)
                 loss = loss / config.update_every
                 print("loss: ", loss.item())
                 loss_record.append(loss.item())
                 
+                print("Do Zero Grad!")
                 optimizer_lang.zero_grad() ## ADD ZERO_GRAD
                 optimizer_bert.zero_grad() ## ADD ZERO_GRAD
                 optimizer_label.zero_grad() ## ADD ZERO_GRAD
 
                 # print("optimizer_label params: ", optimizer_label.param_groups)
 
+                print("Backward Pass!")
                 # Backward pass
                 loss.backward()
                 nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, labeler.model.parameters()), \
@@ -175,12 +180,14 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                 total_stats.update(stat)
                 total_stats.print_out(global_step, epoch, batch_iter, batch_num) # iter -> epoch
 
+                print("Update optimizers!")
                 # STEP 2
                 optimizer_lang.step()
                 optimizer_bert.step()
                 optimizer_label.step() ## ADD step() to update parameters after each iteration
                 batch_iter += 1
-                
+                """
+                """
                 if batch_iter % config.update_every == 0 or batch_iter == batch_num:
                         # Update scheduler for learning rate at the end of each epoch AND after optimizer.step()
                         # print("optimizer_label params: ", optimizer_label.param_groups)
@@ -336,7 +343,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                                         logging.info("Test the model in Epoch: %d, Batch_iter: %d" %(epoch, batch_iter))
                                         torch.save(labeler.model.state_dict(), config.save_model_path)
                                         TestDataForBestModel(test_data, labeler, vocab, config, global_step)
-                            
+                """                        
     logging.info("Loss scores: %s", loss_record)
     logging.info("record_exact_dev_scores: %s", record_exact_dev_scores)
     logging.info("record_exact_dev_recalls: %s", record_exact_dev_recalls)
@@ -728,12 +735,14 @@ if __name__ == '__main__':
     bert_config.language_emb_size = config.language_emb_size
     bert_config.num_language_features = config.language_features
     bert_config.nl_project = config.nl_project
-    # BERT
-    bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
 
-    # PGNBERT
+    ## Baseline Model: BERT
+    # bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
+
+    ## PGNBERT Model (with Adaptor)
     # bert = AdapterPGNBertModel(config.bert_path)
-    # bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
+    # bert = AdapterPGNBertModel(config.bert_path, config=bert_config)
+    bert = AdapterPGNBertModel('bert-base-multilingual-cased', config=bert_config) # Use this version
     
     if config.use_cuda:
         torch.backends.cudnn.enabled = True

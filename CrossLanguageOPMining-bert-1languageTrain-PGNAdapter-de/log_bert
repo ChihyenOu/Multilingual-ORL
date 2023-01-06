@@ -1,0 +1,83 @@
+Better speed can be achieved with apex installed from https://www.github.com/nvidia/apex.
+GPU available:  True
+CuDNN: 
+ True
+Loaded config file sucessfully.
+data_dir expdata/dataset
+train_file expdata/dataset/result_orl_de_train.txt
+dev_file expdata/dataset/result_orl_de_val.txt
+test_file expdata/dataset/result_orl_de_test.txt
+min_occur_count 0
+save_dir expdata/dataset_output_de
+config_file expdata/dataset_output_de/config.cfg
+save_model_path expdata/dataset_output_de/model
+save_vocab_path expdata/dataset_output_de/vocab
+load_dir expdata/dataset_output_de
+load_model_path expdata/dataset_output_de/model
+load_vocab_path expdata/dataset_output_de/vocab
+bert_path bert-base-multilingual-cased
+bert_config_path bert-base-multilingual-cased/bert_config.json
+bert_hidden_size 768
+output_hidden_states True
+output_attentions False
+tune_start_layer 12
+use_adapter true
+use_language_emb true
+num_adapters 1
+adapter_size 256
+one_hot false
+language_emb_size 32
+language_emb_dropout 0.1
+language_drop_rate 0.2
+num_language_features 289
+nl_project 289
+language_features syntax_knn+phonology_knn+inventory_knn
+adapter_initializer_range 0.0001
+in_langs de
+out_langs de
+letter_codes data/letter_codes.json
+model BiLSTMCRFModel
+lstm_layers 3
+word_dims 100
+predict_dims 100
+dropout_emb 0.0
+lstm_hiddens 200
+dropout_lstm_input 0.33
+dropout_lstm_hidden 0.33
+hidden_dims 100
+inner_hidden_dims 400
+number_heads 8
+num_layers 6
+dropout_hidden 0.33
+learning_rate 2e-3
+decay .75
+decay_steps 5000
+beta_1 .9
+beta_2 .9
+epsilon 1e-12
+clip 1.0
+parser_tune 1
+train_epochs 40
+train_batch_size 32
+test_batch_size 32
+validate_every 160
+update_every 160
+save_after 2
+Total num:  2006
+_id2label:  ['<pad>', 'O', 'I-TARGET', 'B-TARGET', 'B-AGENT', 'I-AGENT']
+Vocab info: #words 3114, #labels 6
+
+GPU using status:  True
+200 1068
+Orthogonal pretrainer loss: 7.28e-30
+200 600
+Orthogonal pretrainer loss: 1.59e-30
+200 600
+Orthogonal pretrainer loss: 1.41e-30
+Load bert vocabulary finished
+Traceback Some weights of the model checkpoint at bert-base-multilingual-cased were not used when initializing BertModel: ['cls.predictions.transform.LayerNorm.bias', 'cls.predictions.bias', 'cls.predictions.transform.dense.weight', 'cls.predictions.transform.LayerNorm.weight', 'cls.seq_relationship.bias', 'cls.seq_relationship.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.decoder.weight']
+- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+ingual-ORL/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/./driver/BertTokenHelper.py", line 88, in bert_ids
+    if not bpe_u.startswith('##') and sub_index == word_length_list[word_count]:
+IndexError: list index out of range

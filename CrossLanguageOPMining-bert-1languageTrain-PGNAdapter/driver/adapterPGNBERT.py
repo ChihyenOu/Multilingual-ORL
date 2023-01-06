@@ -7,6 +7,8 @@ from torch.nn import functional as F
 # from transformers.modeling_bert import BertModel
 from transformers.models.bert.modeling_bert import *
 
+from driver.modeling import BertPreTrainedModel # ADD
+
 def set_requires_grad(module: nn.Module, status: bool = False):
     for param in module.parameters():
         param.requires_grad = status
@@ -192,7 +194,7 @@ class AdapterBertModel(nn.Module):
         bert_output = self.bert(attention_mask=attention_mask, inputs_embeds=inputs_embeds)
         return bert_output[0]
 
-class AdapterPGNBertModel(nn.Module):
+class AdapterPGNBertModel(nn.Module): # CAHNGE from nn.Module to BertPreTrainedModel
     def __init__(self,
                  name_or_path_or_model: Union[str, BertModel],
                  adapter_size: int = 128,
@@ -206,6 +208,7 @@ class AdapterPGNBertModel(nn.Module):
         self.bert_layers = config.num_hidden_layers # ADD: this is for (output = torch.tmm())
 
         if isinstance(name_or_path_or_model, str):
+            print("LOAD PRETRAINED MODEL!")
             self.bert = BertModel.from_pretrained(name_or_path_or_model)
         else:
             self.bert = name_or_path_or_model
@@ -281,10 +284,10 @@ class AdapterPGNBertModel(nn.Module):
 
         # New
         # output = torch.bmm(bert_pieces, bert_output[0][self.bert_layers - 1])
-        #output = torch.bmm(bert_pieces, bert_output)
-        # output = torch.bmm(bert_pieces, bert_output[0])
+        # output = torch.bmm(bert_pieces, bert_output)
+        output = torch.bmm(bert_pieces, bert_output[0])
         # Raw version
         # output = torch.bmm(bert_pieces, bert_output[self.bert_layers - 1])
         # return bert_output[0]
-        return bert_output
-        # return output
+        # return bert_output
+        return output
