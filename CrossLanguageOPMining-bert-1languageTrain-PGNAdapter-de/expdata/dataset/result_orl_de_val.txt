@@ -1190,10 +1190,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren O
-22 &quot; O
+22 " O
 23 strengeren O
 24 Beschleunigungsgebots O
-25 &quot; O
+25 " O
 26 beantragt O
 27 . O
 
@@ -1947,9 +1947,9 @@
 0 Man B-AGENT
 1 kann O
 2 Gesetze B-TARGET
-3 &quot; O
+3 " O
 4 durchstieren B-DSE-*
-5 &quot; O
+5 " O
 6 , O
 7 wenn O
 8 sie O
@@ -2229,7 +2229,7 @@
 17 es O
 18 heisst O
 19 : O
-20 &quot;Schweigen B-DSE-*
+20 "Schweigen B-DSE-*
 21 hat O
 22 seine O
 23 Zeit O
@@ -2240,7 +2240,7 @@
 28 seine O
 29 Zeit O
 30 . O
-31 &quot; O
+31 " O
 
 0 Mit O
 1 95 O
@@ -2941,7 +2941,7 @@
 4 gut O
 5 - O
 6 : O
-7 &quot;Die B-TARGET
+7 "Die B-TARGET
 8 Neutralität I-TARGET
 9 gehört O
 10 ... O
@@ -2961,7 +2961,7 @@
 24 bringen O
 25 kann O
 26 . O
-27 &quot; O
+27 " O
 
 0 Dabei O
 1 würde O
@@ -3081,10 +3081,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren B-DSE-*
-22 &quot; O
+22 " O
 23 strengeren O
 24 Beschleunigungsgebots O
-25 &quot; O
+25 " O
 26 beantragt O
 27 . O
 
@@ -3589,11 +3589,11 @@
 2 mich B-TARGET
 3 in I-TARGET
 4 diesen I-TARGET
-5 &quot; I-TARGET
+5 " I-TARGET
 6 Schraubstock I-TARGET
 7 des I-TARGET
 8 Volkes I-TARGET
-9 &quot; I-TARGET
+9 " I-TARGET
 10 spannen I-TARGET
 11 lassen B-DSE-*
 12 und O
@@ -3996,7 +3996,7 @@
 1 heisst O
 2 wörtlich O
 3 : O
-4 &quot;Der B-AGENT
+4 "Der B-AGENT
 5 Bundesrat I-AGENT
 6 ist O
 7 sich B-DSE-*
@@ -4011,7 +4011,7 @@
 16 ändern I-TARGET
 17 kann I-TARGET
 18 . O
-19 &quot; O
+19 " O
 
 0 Ferner O
 1 hatte O

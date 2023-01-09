@@ -583,11 +583,11 @@
 12 letzten O
 13 Versuch O
 14 das O
-15 &quot;Livre O
+15 "Livre O
 16 noir O
 17 de O
 18 la O
-19 neutralité&quot; O
+19 neutralité" O
 20 der O
 21 Auns O
 22 schenken O
@@ -605,12 +605,12 @@
 9 nach O
 10 dem O
 11 Grundsatz O
-12 &quot; O
+12 " O
 13 Keine O
 14 Strafe O
 15 ohne O
 16 Gesetz B-DSE-*
-17 &quot; O
+17 " O
 18 nicht O
 19 bestraft O
 20 werden O
@@ -1244,12 +1244,12 @@
 9 nach O
 10 dem O
 11 Grundsatz O
-12 &quot; O
+12 " O
 13 Keine O
 14 Strafe O
 15 ohne O
 16 Gesetz O
-17 &quot; O
+17 " O
 18 nicht I-TARGET
 19 bestraft I-TARGET
 20 werden I-TARGET
@@ -1960,11 +1960,11 @@
 2 mich B-AGENT
 3 in B-TARGET
 4 diesen I-TARGET
-5 &quot; I-TARGET
+5 " I-TARGET
 6 Schraubstock I-TARGET
 7 des I-TARGET
 8 Volkes I-TARGET
-9 &quot; O
+9 " O
 10 spannen B-DSE-*
 11 lassen O
 12 und O
@@ -2172,11 +2172,11 @@
 2 mich O
 3 in O
 4 diesen O
-5 &quot; O
+5 " O
 6 Schraubstock O
 7 des O
 8 Volkes O
-9 &quot; O
+9 " O
 10 spannen O
 11 lassen O
 12 und O
@@ -2807,7 +2807,7 @@
 4 gut O
 5 - O
 6 : O
-7 &quot;Die O
+7 "Die O
 8 Neutralität O
 9 gehört O
 10 ... O
@@ -2827,7 +2827,7 @@
 24 bringen I-DSE
 25 kann O
 26 . O
-27 &quot; O
+27 " O
 
 0 Wir O
 1 haben O
@@ -4628,11 +4628,11 @@
 2 mich O
 3 in O
 4 diesen O
-5 &quot; O
+5 " O
 6 Schraubstock O
 7 des O
 8 Volkes O
-9 &quot; O
+9 " O
 10 spannen O
 11 lassen O
 12 und O
@@ -5140,11 +5140,11 @@
 12 letzten O
 13 Versuch O
 14 das O
-15 &quot;Livre O
+15 "Livre O
 16 noir O
 17 de O
 18 la O
-19 neutralité&quot; O
+19 neutralité" O
 20 der O
 21 Auns O
 22 schenken O
@@ -7437,7 +7437,7 @@
 1 heisst O
 2 wörtlich O
 3 : O
-4 &quot;Der O
+4 "Der O
 5 Bundesrat O
 6 ist O
 7 sich O
@@ -7452,7 +7452,7 @@
 16 ändern I-TARGET
 17 kann B-DSE-*
 18 . O
-19 &quot; O
+19 " O
 
 0 Es B-TARGET
 1 würde O
@@ -8582,11 +8582,11 @@
 10 Ausdehnung O
 11 des O
 12 Programms O
-13 &quot; O
+13 " O
 14 Jugend O
 15 und O
 16 Sport O
-17 &quot; O
+17 " O
 18 auf O
 19 Fünf- O
 20 bis O
@@ -9367,20 +9367,20 @@
 19 SP O
 20 setze O
 21 sich O
-22 &quot; O
+22 " O
 23 in O
 24 dubio O
 25 pro O
 26 Grundrechte O
-27 &quot; O
+27 " O
 28 und O
 29 nicht O
-30 &quot; O
+30 " O
 31 in O
 32 dubio O
 33 pro O
 34 Beschleunigungsgebot O
-35 &quot; O
+35 " O
 36 ein O
 37 . O
 
@@ -11341,12 +11341,12 @@
 9 nach O
 10 dem O
 11 Grundsatz O
-12 &quot; O
+12 " O
 13 Keine O
 14 Strafe O
 15 ohne O
 16 Gesetz O
-17 &quot; O
+17 " O
 18 nicht O
 19 bestraft O
 20 werden O
@@ -14195,7 +14195,7 @@
 1 heisst I-DSE
 2 wörtlich O
 3 : O
-4 &quot;Der B-TARGET
+4 "Der B-TARGET
 5 Bundesrat I-TARGET
 6 ist I-TARGET
 7 sich I-TARGET
@@ -14210,7 +14210,7 @@
 16 ändern I-TARGET
 17 kann I-TARGET
 18 . O
-19 &quot; O
+19 " O
 
 0 Es O
 1 gibt O
@@ -16305,11 +16305,11 @@
 17 von O
 18 jugendlichen O
 19 Straftätern O
-20 &quot; O
+20 " O
 21 zu O
 22 ihren O
 23 Gunsten O
-24 &quot; O
+24 " O
 25 , O
 26 sondern O
 27 dass O
@@ -16317,9 +16317,9 @@
 29 Alter I-TARGET
 30 und I-TARGET
 31 Entwicklungsstand I-TARGET
-32 &quot; O
+32 " O
 33 angemessen O
-34 &quot; O
+34 " O
 35 zu O
 36 berücksichtigen B-DSE-*
 37 seien O
@@ -16622,11 +16622,11 @@
 17 von O
 18 jugendlichen O
 19 Straftätern O
-20 &quot; O
+20 " O
 21 zu O
 22 ihren O
 23 Gunsten O
-24 &quot; O
+24 " O
 25 , O
 26 sondern O
 27 dass O
@@ -16634,9 +16634,9 @@
 29 Alter O
 30 und O
 31 Entwicklungsstand O
-32 &quot; O
+32 " O
 33 angemessen B-DSE-*
-34 &quot; O
+34 " O
 35 zu O
 36 berücksichtigen B-TARGET
 37 seien O
@@ -17792,10 +17792,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren O
-22 &quot; O
+22 " O
 23 strengeren O
 24 Beschleunigungsgebots O
-25 &quot; O
+25 " O
 26 beantragt O
 27 . O
 
@@ -18036,20 +18036,20 @@
 19 SP I-AGENT
 20 setze B-DSE-*
 21 sich O
-22 &quot; O
+22 " O
 23 in O
 24 dubio O
 25 pro B-TARGET
 26 Grundrechte I-TARGET
-27 &quot; O
+27 " O
 28 und O
 29 nicht O
-30 &quot; O
+30 " O
 31 in O
 32 dubio O
 33 pro O
 34 Beschleunigungsgebot O
-35 &quot; O
+35 " O
 36 ein I-DSE
 37 . O
 
@@ -19325,10 +19325,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren O
-22 &quot; O
+22 " O
 23 strengeren O
 24 Beschleunigungsgebots O
-25 &quot; O
+25 " O
 26 beantragt O
 27 . O
 
@@ -21286,12 +21286,12 @@
 9 nach I-TARGET
 10 dem I-TARGET
 11 Grundsatz I-TARGET
-12 &quot; I-TARGET
+12 " I-TARGET
 13 Keine I-TARGET
 14 Strafe I-TARGET
 15 ohne I-TARGET
 16 Gesetz I-TARGET
-17 &quot; I-TARGET
+17 " I-TARGET
 18 nicht O
 19 bestraft B-DSE-*
 20 werden O
@@ -21365,9 +21365,9 @@
 0 Man O
 1 kann O
 2 Gesetze B-TARGET
-3 &quot; O
+3 " O
 4 durchstieren B-DSE-*
-5 &quot; O
+5 " O
 6 , O
 7 wenn O
 8 sie O
@@ -23081,7 +23081,7 @@
 4 gut O
 5 - O
 6 : O
-7 &quot;Die O
+7 "Die O
 8 Neutralität B-DSE-*
 9 gehört O
 10 ... O
@@ -23101,14 +23101,14 @@
 24 bringen O
 25 kann O
 26 . O
-27 &quot; O
+27 " O
 
 0 Man O
 1 kann O
 2 Gesetze O
-3 &quot; O
+3 " O
 4 durchstieren O
-5 &quot; O
+5 " O
 6 , O
 7 wenn O
 8 sie O
@@ -23335,9 +23335,9 @@
 0 Man O
 1 kann O
 2 Gesetze O
-3 &quot; O
+3 " O
 4 durchstieren O
-5 &quot; O
+5 " O
 6 , O
 7 wenn O
 8 sie O
@@ -24589,9 +24589,9 @@
 13 eben O
 14 dann O
 15 unter O
-16 &quot; O
+16 " O
 17 Beratungsaufwand O
-18 &quot; O
+18 " O
 19 . O
 
 0 Es O
@@ -25082,7 +25082,7 @@
 17 es O
 18 heisst B-DSE-*
 19 : O
-20 &quot;Schweigen B-TARGET
+20 "Schweigen B-TARGET
 21 hat O
 22 seine I-TARGET
 23 Zeit I-TARGET
@@ -25093,7 +25093,7 @@
 28 seine I-TARGET
 29 Zeit I-TARGET
 30 . I-TARGET
-31 &quot; I-TARGET
+31 " I-TARGET
 
 0 Die B-AGENT
 1 Minderheit I-AGENT
@@ -26126,7 +26126,7 @@
 17 es O
 18 heisst O
 19 : O
-20 &quot;Schweigen O
+20 "Schweigen O
 21 hat O
 22 seine O
 23 Zeit O
@@ -26137,7 +26137,7 @@
 28 seine O
 29 Zeit O
 30 . O
-31 &quot; O
+31 " O
 
 0 Ferner O
 1 ist O
@@ -28651,12 +28651,12 @@
 9 nach O
 10 dem O
 11 Grundsatz O
-12 &quot; O
+12 " O
 13 Keine O
 14 Strafe B-DSE-*
 15 ohne O
 16 Gesetz O
-17 &quot; O
+17 " O
 18 nicht O
 19 bestraft O
 20 werden O
@@ -29955,11 +29955,11 @@
 12 letzten O
 13 Versuch O
 14 das O
-15 &quot;Livre O
+15 "Livre O
 16 noir O
 17 de O
 18 la O
-19 neutralité&quot; O
+19 neutralité" O
 20 der O
 21 Auns O
 22 schenken O
@@ -30479,7 +30479,7 @@
 17 es O
 18 heisst O
 19 : O
-20 &quot;Schweigen O
+20 "Schweigen O
 21 hat O
 22 seine O
 23 Zeit O
@@ -30490,7 +30490,7 @@
 28 seine O
 29 Zeit O
 30 . O
-31 &quot; O
+31 " O
 
 0 Im B-DSE-*
 1 Vordergrund I-DSE
@@ -30635,20 +30635,20 @@
 19 SP I-TARGET
 20 setze I-TARGET
 21 sich I-TARGET
-22 &quot; I-TARGET
+22 " I-TARGET
 23 in I-TARGET
 24 dubio I-TARGET
 25 pro I-TARGET
 26 Grundrechte I-TARGET
-27 &quot; I-TARGET
+27 " I-TARGET
 28 und I-TARGET
 29 nicht I-TARGET
-30 &quot; I-TARGET
+30 " I-TARGET
 31 in I-TARGET
 32 dubio I-TARGET
 33 pro I-TARGET
 34 Beschleunigungsgebot I-TARGET
-35 &quot; I-TARGET
+35 " I-TARGET
 36 ein I-TARGET
 37 . O
 
@@ -30901,10 +30901,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren O
-22 &quot; O
+22 " O
 23 strengeren B-DSE-*
 24 Beschleunigungsgebots B-TARGET
-25 &quot; O
+25 " O
 26 beantragt O
 27 . O
 
@@ -31529,7 +31529,7 @@
 4 gut I-DSE
 5 - I-TARGET
 6 : I-TARGET
-7 &quot;Die I-TARGET
+7 "Die I-TARGET
 8 Neutralität I-TARGET
 9 gehört I-TARGET
 10 ... I-TARGET
@@ -31549,7 +31549,7 @@
 24 bringen I-TARGET
 25 kann I-TARGET
 26 . O
-27 &quot; O
+27 " O
 
 0 Selbstverständlich B-DSE-*
 1 können I-TARGET
@@ -32368,7 +32368,7 @@
 8 Tränen O
 9 - O
 10 : O
-11 &quot;Man O
+11 "Man O
 12 könnte O
 13 sogar O
 14 sagen O
@@ -32387,7 +32387,7 @@
 27 Verbindung I-DSE
 28 bringen I-DSE
 29 . O
-30 &quot; O
+30 " O
 
 0 Die O
 1 Festsetzung B-DSE-*
@@ -35256,11 +35256,11 @@
 17 von O
 18 jugendlichen O
 19 Straftätern O
-20 &quot; O
+20 " O
 21 zu B-DSE-*
 22 ihren B-TARGET
 23 Gunsten I-DSE
-24 &quot; O
+24 " O
 25 , O
 26 sondern O
 27 dass O
@@ -35268,9 +35268,9 @@
 29 Alter O
 30 und O
 31 Entwicklungsstand O
-32 &quot; O
+32 " O
 33 angemessen O
-34 &quot; O
+34 " O
 35 zu O
 36 berücksichtigen O
 37 seien O
@@ -35395,11 +35395,11 @@
 12 letzten I-TARGET
 13 Versuch I-TARGET
 14 das I-TARGET
-15 &quot;Livre I-TARGET
+15 "Livre I-TARGET
 16 noir I-TARGET
 17 de I-TARGET
 18 la I-TARGET
-19 neutralité&quot; I-TARGET
+19 neutralité" I-TARGET
 20 der I-TARGET
 21 Auns I-TARGET
 22 schenken I-TARGET
@@ -36415,11 +36415,11 @@
 12 letzten O
 13 Versuch O
 14 das O
-15 &quot;Livre O
+15 "Livre O
 16 noir O
 17 de O
 18 la O
-19 neutralité&quot; O
+19 neutralité" O
 20 der O
 21 Auns O
 22 schenken O
@@ -36430,11 +36430,11 @@
 2 mich O
 3 in O
 4 diesen O
-5 &quot; O
+5 " O
 6 Schraubstock O
 7 des O
 8 Volkes O
-9 &quot; O
+9 " O
 10 spannen O
 11 lassen O
 12 und O
@@ -36930,11 +36930,11 @@
 10 Ausdehnung I-TARGET
 11 des I-TARGET
 12 Programms I-TARGET
-13 &quot; I-TARGET
+13 " I-TARGET
 14 Jugend I-TARGET
 15 und I-TARGET
 16 Sport I-TARGET
-17 &quot; I-TARGET
+17 " I-TARGET
 18 auf I-TARGET
 19 Fünf- I-TARGET
 20 bis I-TARGET
@@ -36980,9 +36980,9 @@
 0 Man O
 1 kann O
 2 Gesetze B-DSE-*
-3 &quot; O
+3 " O
 4 durchstieren O
-5 &quot; O
+5 " O
 6 , O
 7 wenn O
 8 sie O
@@ -37369,7 +37369,7 @@
 8 Tränen O
 9 - O
 10 : O
-11 &quot;Man O
+11 "Man O
 12 könnte O
 13 sogar O
 14 sagen O
@@ -37388,7 +37388,7 @@
 27 Verbindung O
 28 bringen O
 29 . O
-30 &quot; O
+30 " O
 
 0 Wenn O
 1 man O
@@ -38063,7 +38063,7 @@
 8 Tränen O
 9 - O
 10 : O
-11 &quot;Man B-AGENT
+11 "Man B-AGENT
 12 könnte O
 13 sogar O
 14 sagen B-DSE-*
@@ -38082,7 +38082,7 @@
 27 Verbindung I-TARGET
 28 bringen I-TARGET
 29 . O
-30 &quot; O
+30 " O
 
 0 Dies B-TARGET
 1 soll O
@@ -38914,20 +38914,20 @@
 19 SP I-TARGET
 20 setze I-TARGET
 21 sich I-TARGET
-22 &quot; I-TARGET
+22 " I-TARGET
 23 in I-TARGET
 24 dubio I-TARGET
 25 pro I-TARGET
 26 Grundrechte I-TARGET
-27 &quot; I-TARGET
+27 " I-TARGET
 28 und I-TARGET
 29 nicht I-TARGET
-30 &quot; I-TARGET
+30 " I-TARGET
 31 in I-TARGET
 32 dubio I-TARGET
 33 pro I-TARGET
 34 Beschleunigungsgebot I-TARGET
-35 &quot; I-TARGET
+35 " I-TARGET
 36 ein I-TARGET
 37 . O
 
@@ -39918,7 +39918,7 @@
 4 gut O
 5 - O
 6 : O
-7 &quot;Die O
+7 "Die O
 8 Neutralität O
 9 gehört O
 10 ... O
@@ -39938,7 +39938,7 @@
 24 bringen I-DSE
 25 kann O
 26 . O
-27 &quot; O
+27 " O
 
 0 Schon O
 1 bei O
@@ -42262,11 +42262,11 @@
 17 von I-TARGET
 18 jugendlichen I-TARGET
 19 Straftätern I-TARGET
-20 &quot; I-TARGET
+20 " I-TARGET
 21 zu I-TARGET
 22 ihren I-TARGET
 23 Gunsten I-TARGET
-24 &quot; O
+24 " O
 25 , O
 26 sondern O
 27 dass O
@@ -42274,9 +42274,9 @@
 29 Alter O
 30 und O
 31 Entwicklungsstand O
-32 &quot; O
+32 " O
 33 angemessen O
-34 &quot; O
+34 " O
 35 zu O
 36 berücksichtigen O
 37 seien O
@@ -44868,7 +44868,7 @@
 8 Tränen I-DSE
 9 - O
 10 : O
-11 &quot;Man I-TARGET
+11 "Man I-TARGET
 12 könnte I-TARGET
 13 sogar I-TARGET
 14 sagen I-TARGET
@@ -44887,7 +44887,7 @@
 27 Verbindung I-TARGET
 28 bringen I-TARGET
 29 . O
-30 &quot; I-TARGET
+30 " I-TARGET
 
 0 Es B-TARGET
 1 ist O
@@ -48350,10 +48350,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren O
-22 &quot; O
+22 " O
 23 strengeren O
 24 Beschleunigungsgebots B-DSE-*
-25 &quot; O
+25 " O
 26 beantragt O
 27 . O
 
@@ -49787,10 +49787,10 @@
 19 Verhältnis O
 20 zum O
 21 Erwachsenenstrafverfahren O
-22 &quot; O
+22 " O
 23 strengeren O
 24 Beschleunigungsgebots O
-25 &quot; O
+25 " O
 26 beantragt B-DSE-*
 27 . O
 
@@ -53520,9 +53520,9 @@
 0 Man O
 1 kann O
 2 Gesetze O
-3 &quot; O
+3 " O
 4 durchstieren O
-5 &quot; O
+5 " O
 6 , O
 7 wenn O
 8 sie O
@@ -53564,7 +53564,7 @@
 17 es O
 18 heisst O
 19 : O
-20 &quot;Schweigen O
+20 "Schweigen O
 21 hat O
 22 seine O
 23 Zeit O
@@ -53575,7 +53575,7 @@
 28 seine O
 29 Zeit O
 30 . O
-31 &quot; O
+31 " O
 
 0 Im O
 1 Einklang O
@@ -53652,9 +53652,9 @@
 13 eben O
 14 dann O
 15 unter O
-16 &quot; O
+16 " O
 17 Beratungsaufwand O
-18 &quot; O
+18 " O
 19 . O
 
 0 Man B-TARGET
@@ -54112,11 +54112,11 @@
 17 von I-TARGET
 18 jugendlichen I-TARGET
 19 Straftätern I-TARGET
-20 &quot; I-TARGET
+20 " I-TARGET
 21 zu I-TARGET
 22 ihren I-TARGET
 23 Gunsten I-TARGET
-24 &quot; I-TARGET
+24 " I-TARGET
 25 , I-TARGET
 26 sondern I-TARGET
 27 dass I-TARGET
@@ -54124,9 +54124,9 @@
 29 Alter I-TARGET
 30 und I-TARGET
 31 Entwicklungsstand I-TARGET
-32 &quot; I-TARGET
+32 " I-TARGET
 33 angemessen I-TARGET
-34 &quot; I-TARGET
+34 " I-TARGET
 35 zu I-TARGET
 36 berücksichtigen I-TARGET
 37 seien I-TARGET
@@ -55685,7 +55685,7 @@
 8 Tränen O
 9 - O
 10 : O
-11 &quot;Man B-TARGET
+11 "Man B-TARGET
 12 könnte B-DSE-*
 13 sogar I-TARGET
 14 sagen I-TARGET
@@ -55704,7 +55704,7 @@
 27 Verbindung I-TARGET
 28 bringen I-TARGET
 29 . O
-30 &quot; O
+30 " O
 
 0 Besser O
 1 ist O
@@ -56112,11 +56112,11 @@
 12 letzten O
 13 Versuch B-DSE-*
 14 das O
-15 &quot;Livre O
+15 "Livre O
 16 noir O
 17 de O
 18 la O
-19 neutralité&quot; O
+19 neutralité" O
 20 der O
 21 Auns O
 22 schenken O
@@ -58404,11 +58404,11 @@
 12 letzten O
 13 Versuch O
 14 das O
-15 &quot;Livre O
+15 "Livre O
 16 noir O
 17 de O
 18 la O
-19 neutralité&quot; O
+19 neutralité" O
 20 der O
 21 Auns O
 22 schenken B-DSE-*
@@ -58419,11 +58419,11 @@
 2 mich O
 3 in O
 4 diesen O
-5 &quot; O
+5 " O
 6 Schraubstock O
 7 des O
 8 Volkes O
-9 &quot; O
+9 " O
 10 spannen O
 11 lassen O
 12 und O
