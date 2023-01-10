@@ -3,6 +3,7 @@ import re
 zh_pattern = re.compile(u'[\u4e00-\u9fa5]+')
 
 
+
 def contain_zh(word):
     '''
     判断传入字符串是否包含中文
@@ -47,7 +48,7 @@ class BertTokenHelper(object):
                     new_text_list.append('x')
         else:
             for elem in text_list:
-                for char in ["'", ",", ":", "", '/', '//', '\\\\', '\\', "$", "*", '@', '.', '_', '&', '--', '-', '``', '`']:
+                for char in ["'", ",", ":", "", '/', '//', '\\\\', '\\', "$", "*", '@', '.', '_', '&', '--', '-', '``', '`', '\"']: # ADD: double quote
                     if len(elem) != 1 and char in elem:
                         elem = elem.replace(char, '')
                     if len(elem) == 0:
@@ -61,7 +62,10 @@ class BertTokenHelper(object):
         # print(text_list)
         text_list = self.filt(text_list)
         text = ' '.join(text_list)
+        #print(text)
         word_length_list = self.word_len_of(text_list)
+        #print("Word length: ", len(word_length_list))
+        #print("Word length list:", word_length_list)
         outputs = self.tokenizer.encode_plus(text, add_special_tokens=True, return_tensors='pt')
         bert_indice = outputs["input_ids"].squeeze()
         segments_id = outputs["token_type_ids"].squeeze()
@@ -70,6 +74,7 @@ class BertTokenHelper(object):
         list_segments_id = [idx.item() for idx in segments_id]
 
         bert_tokens = self.tokenizer.convert_ids_to_tokens(list_bert_indice)
+        #print("size of bert tokens", len(bert_tokens))
         tokens = self.tokenizer.convert_tokens_to_string(bert_tokens)
 
         # print(bert_tokens)
@@ -86,7 +91,7 @@ class BertTokenHelper(object):
                 list_piece_id.append([idx])
             else:
                 if not bpe_u.startswith('##') and sub_index == word_length_list[word_count]:
-                    # print(word_count)
+                    # print("word_count", word_count)
                     word_count += 1
                     sub_index = 0
                 if sub_index == 0:
@@ -116,6 +121,7 @@ class BertTokenHelper(object):
         return list_bert_indice, list_segments_id, list_piece_id
 
 
-# bert_token = BertTokenHelper('bert-base-multilingual-cased')
-# bert_token.bert_ids(['He','likes','singing'])
-# bert_token.bert_ids(['我','爱','这个','世界','singing!'])
+#bert_token = BertTokenHelper('bert-base-multilingual-cased')
+#bert_token.bert_ids(['He','likes','singing'])
+#bert_token.bert_ids(['Er','liebt','singen'])
+#bert_token.bert_ids(['我','爱','这个','世界','singing!'])
