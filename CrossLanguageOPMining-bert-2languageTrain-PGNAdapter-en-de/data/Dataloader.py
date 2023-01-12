@@ -101,12 +101,15 @@ def data_iter(data, batch_size, shuffle=True, bsorted=True):
 
 
 def batch_data_variable(batch, vocab):
-    length = batch[0].length
+    MAX_LEN = 512 #ADD OR 512
+    length = batch[0].length if batch[0].length <= MAX_LEN else MAX_LEN # EDIT
+    #print("batch word length: ", batch[0].length)
     batch_size = len(batch)
     word_length_list = [length]
     for b in range(1, batch_size):
-        if batch[b].length > length: length = batch[b].length
-        word_length_list.append(batch[b].length)
+        if batch[b].length > length and batch[b].length <= MAX_LEN: length = batch[b].length # EDIT
+        #print("batch word length: ", batch[b].length)
+        word_length_list.append(batch[b].length if batch[b].length <= MAX_LEN else MAX_LEN) # EDIT
 
     words = Variable(torch.LongTensor(batch_size, length).fill_(vocab.PAD), requires_grad=False)
     extwords = Variable(torch.LongTensor(batch_size, length).fill_(vocab.PAD), requires_grad=False)
@@ -117,8 +120,9 @@ def batch_data_variable(batch, vocab):
     lang_ids = -1
 
     # bert
-    bert_length_list = [len(sentence.list_bert_indice) for sentence in batch]
+    bert_length_list = [len(sentence.list_bert_indice) if len(sentence.list_bert_indice) <= MAX_LEN else MAX_LEN for sentence in batch] # Modify: set the max length = 512
     max_bert_length = max(bert_length_list)
+    #print("MAX_BERT_LENGTH: ", max_bert_length)
     bert_indices_tensor = torch.LongTensor(batch_size, max_bert_length).zero_()
     bert_segments_tensor = torch.LongTensor(batch_size, max_bert_length).zero_()
     bert_pieces_tensor = torch.Tensor(batch_size, length, max_bert_length).zero_()
@@ -141,6 +145,7 @@ def batch_data_variable(batch, vocab):
             if index in key_list: # New version
                 predicts[b, index] = 1
                 #outmasks[b, index] = 0
+            if index == length - 1: break # ADD
             index += 1
 
         # bert
@@ -148,9 +153,14 @@ def batch_data_variable(batch, vocab):
             bert_indices_tensor[b, index] = list_bert_indice[index]
             bert_segments_tensor[b, index] = list_segments_id[index]
         shift_pos = 1  # remove the first token
+        
+        #print("Word length list: ", word_length_list[b])
+        #print("Size of list piece id: ", len(list_piece_id))
         for sindex in range(word_length_list[b]):
             avg_score = 1.0 / len(list_piece_id[sindex + shift_pos])
+        
             for tindex in list_piece_id[sindex + shift_pos]:
+                if tindex >= max_bert_length: break # ADD
                 bert_pieces_tensor[b, sindex, tindex] = avg_score
         ###
         b += 1
