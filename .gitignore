@@ -7,8 +7,15 @@ CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/wiki.en.vec.orl.fil
 t.py
 
 CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset
-!Multilingual-ORL/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset/result_orl_ch_test.txt
-!Multilingual-ORL/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset/result_orl_ch_train.txt
-!Multilingual-ORL/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset/result_orl_ch_val.txt
+!CrossLanguageOPMining-bert-1languageTrain-PGNAdapter-de/expdata/dataset/result_orl_de_test.txt
+!CrossLanguageOPMining-bert-1languageTrain-PGNAdapter-de/expdata/dataset/result_orl_de_train.txt
+!CrossLanguageOPMining-bert-1languageTrain-PGNAdapter-de/expdata/dataset/result_orl_de_val.txt
+CrossLanguageOPMining-bert-1languageTrain-PGNAdapter-de/expdata/dataset
+CrossLanguageOPMining-bert-1languageTrain-PGNAdapter-de/expdata/dataset_output_de
 
-Multilingual-ORL/CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset_output_de
+
+!CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset/result_orl_ch_test.txt
+!CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset/result_orl_ch_train.txt
+!CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset/result_orl_ch_val.txt
+
+CrossLanguageOPMining-bert-1languageTrain-PGNAdapter/expdata/dataset_output_de

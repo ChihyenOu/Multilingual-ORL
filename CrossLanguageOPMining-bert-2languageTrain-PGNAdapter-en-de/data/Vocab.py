@@ -149,10 +149,20 @@ class Vocab(object):
         return len(self._id2label) # +1 # Change
 
 
-def creat_vocab(corpusFile, min_occur_count):
+def creat_vocab(corpusFile1, corpusFile2, min_occur_count):
     word_counter = Counter()
     label_counter = Counter()
-    with open(corpusFile, 'r', encoding='utf8') as infile:
+    with open(corpusFile1, 'r', encoding='utf8') as infile:
+        for sentence in readSRL(infile):
+            index = 0
+            for token in sentence.words:
+                word_counter[token.form] += 1
+                # if index < sentence.key_start or index > sentence.key_end: # Old version
+                if index not in sentence.key_list: # New version
+                    label_counter[token.label] += 1
+                index = index + 1
+    # ADD BELOW lines for second corpus
+    with open(corpusFile2, 'r', encoding='utf8') as infile:
         for sentence in readSRL(infile):
             index = 0
             for token in sentence.words:
@@ -163,3 +173,4 @@ def creat_vocab(corpusFile, min_occur_count):
                 index = index + 1
 
     return Vocab(word_counter, label_counter, min_occur_count)
+    

@@ -201,7 +201,7 @@ def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embe
                         prop_gold_num, prop_predict_num, prop_gold_correct_num, prop_predict_correct_num, \
                         prop_gold_agent_num, prop_predict_agent_num, prop_gold_correct_agent_num, prop_predict_correct_agent_num, \
                         prop_gold_target_num, prop_predict_target_num, prop_gold_correct_target_num, prop_predict_correct_target_num \
-                        = evaluate(dev_data, labeler, vocab, config.dev_file + '.' + str(global_step))
+                        = evaluate(dev_data, labeler, vocab, config.target_dev_file + '.' + str(global_step))
 
                         print("Global step: ", global_step)
 
@@ -409,7 +409,7 @@ def TestDataForBestModel(test_data, labeler, vocab, config, global_step):
     test_prop_gold_num, test_prop_predict_num, test_prop_gold_correct_num, test_prop_predict_correct_num, \
     test_prop_gold_agent_num, test_prop_predict_agent_num, test_prop_gold_correct_agent_num, test_prop_predict_correct_agent_num, \
     test_prop_gold_target_num, test_prop_predict_target_num, test_prop_gold_correct_target_num, test_prop_predict_correct_target_num \
-        = evaluate(test_data, labeler, vocab, config.test_file + '.' + str(global_step))
+        = evaluate(test_data, labeler, vocab, config.target_test_file + '.' + str(global_step))
 
     test_score = 200.0 * test_correct_num / (test_gold_num + test_predict_num) \
         if test_correct_num > 0 else 0.0
@@ -697,7 +697,8 @@ if __name__ == '__main__':
     # In our case, it doesn't so the config_file keeps the same
     config = Configurable(args.config_file, extra_args)
 
-    vocab = creat_vocab(config.train_file, config.min_occur_count)
+    # ADD one more language source file
+    vocab = creat_vocab(config.source_train_file, config.target_train_file, config.min_occur_count)
     # Remove the below line # pretrained_embeddings_file is not needed
     # vec = vocab.load_pretrained_embs(config.pretrained_embeddings_file) 
     pickle.dump(vocab, open(config.save_vocab_path, 'wb'))
@@ -752,9 +753,11 @@ if __name__ == '__main__':
     lang_dic['in'] = in_language_list
     lang_dic['oov'] = out_language_list
 
-    data = read_corpus(config.train_file, bert_token, lang_dic)
-    dev_data = read_corpus(config.dev_file, bert_token, lang_dic)
-    test_data = read_corpus(config.test_file, bert_token, lang_dic)
+    source_data = read_corpus(config.source_train_file, bert_token, lang_dic) #ADD
+    target_data = read_corpus(config.target_train_file, bert_token, lang_dic) #ADD
+    data = source_data + target_data #ADD
+    dev_data = read_corpus(config.target_dev_file, bert_token, lang_dic) # Modify
+    test_data = read_corpus(config.target_test_file, bert_token, lang_dic) #Modify
     print("Finish code test!")
     # PGNBERT
     train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)

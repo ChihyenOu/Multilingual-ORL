@@ -30,14 +30,23 @@ class Configurable(object):
 	def data_dir(self):
 		return self._config.get('Data','data_dir')
 	@property
-	def train_file(self):
-		return self._config.get('Data','train_file')
+	def source_train_file(self):
+		return self._config.get('Data','source_train_file')
 	@property
-	def dev_file(self):
-		return self._config.get('Data','dev_file')
+	def source_dev_file(self):
+		return self._config.get('Data','source_dev_file')
 	@property
-	def test_file(self):
-		return self._config.get('Data','test_file')
+	def source_test_file(self):
+		return self._config.get('Data','source_test_file')
+	@property
+	def target_train_file(self):
+		return self._config.get('Data', 'target_train_file')
+	@property
+	def target_dev_file(self):
+		return self._config.get('Data', 'target_dev_file')
+	@property
+	def target_test_file(self):
+		return self._config.get('Data', 'target_test_file')
 	@property
 	def min_occur_count(self):
 		return self._config.getint('Data','min_occur_count')
