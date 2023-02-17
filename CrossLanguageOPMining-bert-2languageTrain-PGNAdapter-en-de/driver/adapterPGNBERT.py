@@ -7,7 +7,6 @@ from torch.nn import functional as F
 # from transformers.modeling_bert import BertModel
 from transformers.models.bert.modeling_bert import *
 
-from driver.modeling import BertPreTrainedModel # ADD
 
 def set_requires_grad(module: nn.Module, status: bool = False):
     for param in module.parameters():
@@ -66,27 +65,16 @@ class AdapterWithParameterGen(nn.Module):
         self.up_W = nn.Parameter(torch.zeros(low_rank_dim, adapter_size, hidden_size))
         self.up_b = nn.Parameter(torch.zeros(low_rank_dim, hidden_size))
 
-        # ADD
-        self.low_rank_dim = low_rank_dim # ADD
-        self.hidden_size = hidden_size # ADD
-        self.adapter_size = adapter_size # ADD
-
         self.init_weights()
 
     def forward(self, hidden_states, lang_emb=None):
-        # Modify: self.config.low_rank_dim -> self.low_rank_dim; self.config.hidden_size -> self.hidden_size; self.config.adapter_size -> self.adapter_size
-        down_w = torch.matmul(lang_emb, self.down_W.view(self.low_rank_dim, -1)).view(self.hidden_size, self.adapter_size)
-        # Raw version
-        # down_w = torch.matmul(lang_emb, self.down_W.view(self.config.low_rank_dim, -1)).view(self.config.hidden_size, self.config.adapter_size)
+        down_w = torch.matmul(lang_emb, self.down_W.view(self.config.low_rank_dim, -1)).view(self.config.hidden_size, self.config.adapter_size)
         down_b = torch.matmul(lang_emb, self.down_b)
         down_projected = F.linear(hidden_states, down_w.t(), down_b)
 
         activated = self.activation(down_projected)
 
-        # Modify: self.config.low_rank_dim -> self.low_rank_dim; self.config.hidden_size -> self.hidden_size; self.config.adapter_size -> self.adapter_size
-        up_w = torch.matmul(lang_emb, self.up_W.view(self.low_rank_dim, -1)).view(self.adapter_size, self.hidden_size)
-        # Raw version
-        # up_w = torch.matmul(lang_emb, self.up_W.view(self.config.low_rank_dim, -1)).view(self.config.adapter_size, self.config.hidden_size)
+        up_w = torch.matmul(lang_emb, self.up_W.view(self.config.low_rank_dim, -1)).view(self.config.adapter_size, self.config.hidden_size)
         up_b = torch.matmul(lang_emb, self.up_b)
         up_projected = F.linear(activated, up_w.t(), up_b)
 
@@ -118,16 +106,15 @@ class AdapterPGNBertOutput(nn.Module):
     """
     替代BertOutput和BertSelfOutput
     """
-    def __init__(self, base, adapter_forward, lang_emb): # ADD: lang_emb
+    def __init__(self, base, adapter_forward):
         super().__init__()
         self.base = base
         self.adapter_forward = adapter_forward
-        self.lang_emb = lang_emb # ADD
 
-    def forward(self, hidden_states, input_tensor): # Remove , lang_emb=None
+    def forward(self, hidden_states, input_tensor, lang_emb=None):
         hidden_states = self.base.dense(hidden_states)
         hidden_states = self.base.dropout(hidden_states)
-        hidden_states = self.adapter_forward(hidden_states, self.lang_emb) # ADD self.lang_emb
+        hidden_states = self.adapter_forward(hidden_states)
         hidden_states = self.base.LayerNorm(hidden_states + input_tensor)
         return hidden_states
 
@@ -194,21 +181,14 @@ class AdapterBertModel(nn.Module):
         bert_output = self.bert(attention_mask=attention_mask, inputs_embeds=inputs_embeds)
         return bert_output[0]
 
-class AdapterPGNBertModel(nn.Module): # CAHNGE from nn.Module to BertPreTrainedModel
+class AdapterPGNBertModel(nn.Module):
     def __init__(self,
                  name_or_path_or_model: Union[str, BertModel],
                  adapter_size: int = 128,
                  language_emb_size: int = 32,
-                 external_param: Union[bool, List[bool]] = False,
-                 config: object = None # ADD
-                 ):
+                 external_param: Union[bool, List[bool]] = False):
         super().__init__()
-
-        self.config = config # ADD
-        self.bert_layers = config.num_hidden_layers # ADD: this is for (output = torch.tmm())
-
         if isinstance(name_or_path_or_model, str):
-            print("LOAD PRETRAINED MODEL!")
             self.bert = BertModel.from_pretrained(name_or_path_or_model)
         else:
             self.bert = name_or_path_or_model
@@ -232,14 +212,15 @@ class AdapterPGNBertModel(nn.Module): # CAHNGE from nn.Module to BertPreTrainedM
             ]) for e in param_place
         ])
 
-        ''' ## Raw version
         for i, layer in enumerate(self.bert.encoder.layer):
+            print("i: ", i)
+            print("Layer: ", layer)
             layer.output = AdapterBertOutput(
                 layer.output, self.adapters[i][0].forward)
             set_requires_grad(layer.output.base.LayerNorm, True)
             layer.attention.output = AdapterBertOutput(
                 layer.attention.output, self.adapters[i][1].forward)
-            set_requires_grad(layer.attention.output.base.LayerNorm, True)'''
+            set_requires_grad(layer.attention.output.base.LayerNorm, True)
 
         self.output_dim = self.bert.config.hidden_size
 
@@ -262,32 +243,8 @@ class AdapterPGNBertModel(nn.Module): # CAHNGE from nn.Module to BertPreTrainedM
         #     for (s, w), pieces in word_pieces.items():
         #         inputs_embeds[s, w, :] = self.word_piece(pieces)
 
-        ## New Version ADD HERE
-        for i, layer in enumerate(self.bert.encoder.layer):
-            layer.output = AdapterPGNBertOutput(  # change to AdapterPGNBertOutput
-                layer.output, self.adapters[i][0], lang_embedding) # remove .forward; add lang_embedding
-            # print(layer.output)
-            set_requires_grad(layer.output.base.LayerNorm, True)
-            layer.attention.output = AdapterPGNBertOutput( #  change to AdapterPGNBertOutput
-                layer.attention.output, self.adapters[i][1], lang_embedding) # remove .forward; add lang_embedding
-            # print(layer.attention.output)
-            set_requires_grad(layer.attention.output.base.LayerNorm, True)
-
         attention_mask = None if mask is None else mask.float()
-
-        # Call class BertModel forard function -> return: bert_hidden OR (encoded_layers, pooled output)
-        # https://github.com/huggingface/transformers/blob/main/src/transformers/models/bert/modeling_bert.py#L920
         bert_output = self.bert(attention_mask=attention_mask, inputs_embeds=inputs_embeds, token_type_ids=token_type_ids)
-        
-        # print(len(bert_output[0]))
-        # print(bert_output[0])
-
-        # New
-        # output = torch.bmm(bert_pieces, bert_output[0][self.bert_layers - 1])
-        # output = torch.bmm(bert_pieces, bert_output)
-        output = torch.bmm(bert_pieces, bert_output[0])
-        # Raw version
-        # output = torch.bmm(bert_pieces, bert_output[self.bert_layers - 1])
+        output = torch.bmm(bert_pieces, bert_output[self.bert_layers - 1])
         # return bert_output[0]
-        # return bert_output
         return output

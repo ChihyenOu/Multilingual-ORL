@@ -674,10 +674,10 @@ class Optimizer:
 
 
 if __name__ == '__main__':
-    random.seed(666)
-    np.random.seed(666)
-    torch.cuda.manual_seed(666)
-    torch.manual_seed(666)
+    random.seed(1000)  # 42, 666, 1000
+    np.random.seed(1000)  # 42, 666, 1000
+    torch.cuda.manual_seed(1000)  # 42, 666, 1000
+    torch.manual_seed(1000)  # 42, 666, 1000
 
     ### gpu
     gpu = torch.cuda.is_available()
@@ -698,7 +698,7 @@ if __name__ == '__main__':
     config = Configurable(args.config_file, extra_args)
 
     # ADD one more language source file
-    vocab = creat_vocab(config.source_train_file, config.target_train_file, config.min_occur_count)
+    vocab = creat_vocab(config.source_train_file, config.target_train_file, config.min_occur_count) #modify
     # Remove the below line # pretrained_embeddings_file is not needed
     # vec = vocab.load_pretrained_embs(config.pretrained_embeddings_file) 
     pickle.dump(vocab, open(config.save_vocab_path, 'wb'))
