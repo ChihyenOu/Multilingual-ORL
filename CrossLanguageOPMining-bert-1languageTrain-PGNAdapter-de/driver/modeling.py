@@ -355,7 +355,8 @@ class BertSelfOutput(nn.Module):
             else:
                 self.adapter = adapter
         else:
-            None
+            print("Does not use PGN-Adapter")
+            self.adapter = None # ADD
         self.adapter_prediction = config.adapter_prediction if hasattr(config, 'adapter_prediction') else None
         self.LayerNorm = BertLayerNorm(config.hidden_size, eps=1e-12)
 
@@ -416,7 +417,8 @@ class BertOutput(nn.Module):
             else:
                 self.adapter = adapter
         else:
-            None
+            print("Does NOT use PGN-Adapter!!!!")
+            self.adapter = None # ADD
         self.adapter_prediction = config.adapter_prediction if hasattr(config, 'adapter_prediction') else None
         self.LayerNorm = BertLayerNorm(config.hidden_size, eps=1e-12)
 
