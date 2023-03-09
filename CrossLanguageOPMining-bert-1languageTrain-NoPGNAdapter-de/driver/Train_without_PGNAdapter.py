@@ -15,13 +15,13 @@ from data.Dataloader import *
 import pickle
 import os
 import re
-from driver.BertTokenHelper import BertTokenHelper
-from driver.BertModel import BertExtractor
+#from driver.BertTokenHelper import BertTokenHelper
+#from driver.BertModel import BertExtractor
 
-from driver.language_mlp import LanguageMLP
+#from driver.language_mlp import LanguageMLP
 
-from driver.modeling import BertModel as AdapterBERTModel
-from driver.modeling import BertConfig
+#from driver.modeling import BertModel as AdapterBERTModel
+#from driver.modeling import BertConfig
 from transformers import AdamW, get_linear_schedule_with_warmup
 # from driver.adapterPGNBERT import AdapterPGNBertModel
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -735,9 +735,9 @@ if __name__ == '__main__':
     # lang_dic['in'] = in_language_list
     # lang_dic['oov'] = out_language_list
 
-    data = read_corpus(config.train_file) # EDIT: remove , bert_token, lang_dic
-    dev_data = read_corpus(config.dev_file) # EDIT: remove , bert_token, lang_dic
-    test_data = read_corpus(config.test_file) # EDIT: remove , bert_token, lang_dic
+    data = read_corpus(config.train_file, bert_token = None, lang_id = None) # EDIT: remove , bert_token, lang_dic
+    dev_data = read_corpus(config.dev_file, bert_token = None, lang_id = None) # EDIT: remove , bert_token, lang_dic
+    test_data = read_corpus(config.test_file, bert_token = None, lang_id = None) # EDIT: remove , bert_token, lang_dic
     print("Finish code test!")
     # PGNBERT
     train(data, dev_data, test_data, labeler, vocab, config) # EDIT: remove , bert, language_embedder
