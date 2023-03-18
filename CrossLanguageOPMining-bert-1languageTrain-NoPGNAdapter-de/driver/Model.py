@@ -131,18 +131,13 @@ class BiLSTMCRFModel(nn.Module):
         self.crf = CRF(vocab.label_size)
 
 
-    def forward(self, words, extwords, predicts, inmasks): # remove , bert_hidden
+    def forward(self, words, extwords, predicts, inmasks, bert_hidden):
         # self.highway_lstm1 = HBiLSTM(self.word_embedding_dim * 2, self.lstm_hidden_size // 2, batch_size, self.cuda_id)
         # self.hidden = self.__init_hidden(batch_size)  # clear the hidden state of the LSTM
         # sentence length, mini batch size, input size
         # x_word_embed = self.word_embed(words)
         # x_embed = torch.cat((x_word_embed, bert_hidden), dim=-1)
-        
-        # OLD
-        # x_embed = bert_hidden
-        # New
-        x_word_embed = self.word_embed(words)
-
+        x_embed = bert_hidden
         # x_extword_embed = self.extword_embed(extwords)
         # x_embed = x_word_embed + x_extword_embed
 

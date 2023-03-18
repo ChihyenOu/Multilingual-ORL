@@ -12,14 +12,14 @@ class SRLLabeler(object):
         self.use_cuda = p.is_cuda
         self.device = p.get_device() if self.use_cuda else None
 
-    def forward(self, words, extwords, predicts, inmasks): # remove , bert_hidden
+    def forward(self, words, extwords, predicts, inmasks, bert_hidden):
         if self.use_cuda:
             words, extwords = words.cuda(self.device), extwords.cuda(self.device)
             predicts = predicts.cuda(self.device)
             inmasks = inmasks.cuda(self.device)
-            # bert_hidden = bert_hidden.cuda()
+            bert_hidden = bert_hidden.cuda()
 
-        label_scores = self.model.forward(words, extwords, predicts, inmasks) # remove , bert_hidden
+        label_scores = self.model.forward(words, extwords, predicts, inmasks, bert_hidden)
         # cache
         self.label_scores = label_scores
 
@@ -46,9 +46,9 @@ class SRLLabeler(object):
         return Statistics(loss, num_words, num_correct)
 
 
-    def label(self, words, extwords, predicts, inmasks): # remove , bert_hidden
+    def label(self, words, extwords, predicts, inmasks, bert_hidden):
         if words is not None:
-            self.forward(words, extwords, predicts, inmasks) # remove , bert_hidden
+            self.forward(words, extwords, predicts, inmasks, bert_hidden)
 
         predict_labels = self.model.decode(self.label_scores, inmasks)
 

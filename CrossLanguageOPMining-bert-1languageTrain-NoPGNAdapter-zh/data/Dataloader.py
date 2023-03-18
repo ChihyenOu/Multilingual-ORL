@@ -27,8 +27,6 @@ def judge_language_type(file_name):
 
 def read_corpus(file_path, bert_token, lang_dic):
     data = []
-    #Old
-    """
     language = judge_language_type(file_path)
     lang_id = -1
     in_or_oov = 'in' if language in lang_dic['in'] else 'oov'
@@ -41,9 +39,9 @@ def read_corpus(file_path, bert_token, lang_dic):
             break
     if lang_id == -1:
         print(language)
-        raise RuntimeError"""
+        raise RuntimeError
     with open(file_path, 'r', encoding='utf8') as infile:
-        for sentence in readSRL(infile, bert_token = None, lang_id = None): # Add None for bert_token, lang_id
+        for sentence in readSRL(infile, bert_token, lang_id):
             data.append(sentence)
     return data
 

@@ -722,9 +722,9 @@ if __name__ == '__main__':
     # bert = BertExtractor(config)
     bert_config = BertConfig.from_json_file(config.bert_config_path)
     bert_config.use_adapter = config.use_adapter
-    bert_config.use_language_emb = config.use_language_emb
-    bert_config.num_adapters = config.num_adapters
-    bert_config.adapter_size = config.adapter_size
+    # bert_config.use_language_emb = config.use_language_emb
+    # bert_config.num_adapters = config.num_adapters
+    # bert_config.adapter_size = config.adapter_size
     bert_config.language_emb_size = config.language_emb_size
     bert_config.num_language_features = config.language_features
     bert_config.nl_project = config.nl_project

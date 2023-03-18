@@ -15,13 +15,13 @@ from data.Dataloader import *
 import pickle
 import os
 import re
-#from driver.BertTokenHelper import BertTokenHelper
-#from driver.BertModel import BertExtractor
+from driver.BertTokenHelper import BertTokenHelper
+from driver.BertModel import BertExtractor
 
-#from driver.language_mlp import LanguageMLP
+from driver.language_mlp import LanguageMLP
 
-#from driver.modeling import BertModel as AdapterBERTModel
-#from driver.modeling import BertConfig
+from driver.modeling import BertModel as AdapterBERTModel
+from driver.modeling import BertConfig
 from transformers import AdamW, get_linear_schedule_with_warmup
 # from driver.adapterPGNBERT import AdapterPGNBertModel
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
@@ -91,7 +91,7 @@ record_prop_test_target_precisions = []
 
 loss_record = []
 
-def train(data, dev_data, test_data, labeler, vocab, config): # EDIT: remove , bert, language_embedder
+def train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder):
    # NEW VERSION
     optimizer_label = torch.optim.AdamW(filter(lambda p: p.requires_grad, labeler.model.parameters()), lr=config.learning_rate, \
                                                 betas=(config.beta_1, config.beta_2), eps=config.epsilon)    
@@ -128,22 +128,18 @@ def train(data, dev_data, test_data, labeler, vocab, config): # EDIT: remove , b
                 print("Iteration: ", ii)
                 ii += 1
                 
-                # OLD
-                # words, extwords, predicts, inmasks, labels, outmasks, \
-                # bert_indices_tensor, bert_segments_tensor, bert_pieces_tensor, lang_ids = \
-                   #      batch_data_variable(onebatch, vocab)
-
-                #if config.use_cuda:
-                 #       bert_indices_tensor = bert_indices_tensor.cuda()
-                  #      bert_segments_tensor = bert_segments_tensor.cuda()
-                   #     bert_pieces_tensor = bert_pieces_tensor.cuda()
-
-                # New
                 words, extwords, predicts, inmasks, labels, outmasks, \
-                _, _, _, _ = batch_data_variable(onebatch, vocab)
+                bert_indices_tensor, bert_segments_tensor, bert_pieces_tensor, lang_ids = \
+                        batch_data_variable(onebatch, vocab)
+                
+                
+                if config.use_cuda:
+                        bert_indices_tensor = bert_indices_tensor.cuda()
+                        bert_segments_tensor = bert_segments_tensor.cuda()
+                        bert_pieces_tensor = bert_pieces_tensor.cuda()
 
                 # Forward pass
-                #lang_embedding = language_embedder(lang_ids)
+                lang_embedding = language_embedder(lang_ids)
                 
                 ## Baseline Model - BERTModel  & PGNAdaptor
                 # bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
@@ -151,18 +147,18 @@ def train(data, dev_data, test_data, labeler, vocab, config): # EDIT: remove , b
                 # labeler.forward(words, extwords, predicts, inmasks, bert_hidden)
                 
                 # PGNAdaptor
-                #pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
-                 #                       bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+                pgnbert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, 
+                                        bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
                 # print(pgnbert_hidden.size())
-                labeler.forward(words, extwords, predicts, inmasks) # EDIT, remove: pgnbert_hidden
+                labeler.forward(words, extwords, predicts, inmasks, pgnbert_hidden) 
                 
                 loss, stat = labeler.compute_loss(labels, outmasks)
                 loss = loss / config.update_every
                 print("loss: ", loss.item())
                 loss_record.append(loss.item())
                 
-                # optimizer_lang.zero_grad() ## ADD ZERO_GRAD
-                # optimizer_bert.zero_grad() ## ADD ZERO_GRAD
+                optimizer_lang.zero_grad() ## ADD ZERO_GRAD
+                optimizer_bert.zero_grad() ## ADD ZERO_GRAD
                 optimizer_label.zero_grad() ## ADD ZERO_GRAD
 
                 # print("optimizer_label params: ", optimizer_label.param_groups)
@@ -171,17 +167,17 @@ def train(data, dev_data, test_data, labeler, vocab, config): # EDIT: remove , b
                 loss.backward()
                 nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, labeler.model.parameters()), \
                                                 max_norm=config.clip)
-                # nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, bert.parameters()), \
-                 #                                max_norm=config.clip)
-                #nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, language_embedder.parameters()), \
-                   #                              max_norm=config.clip)
+                nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, bert.parameters()), \
+                                                max_norm=config.clip)
+                nn.utils.clip_grad_norm_(filter(lambda p: p.requires_grad, language_embedder.parameters()), \
+                                                max_norm=config.clip)
                                                 
                 total_stats.update(stat)
                 total_stats.print_out(global_step, epoch, batch_iter, batch_num) # iter -> epoch
 
                 # STEP 2
-                # optimizer_lang.step()
-                # optimizer_bert.step()
+                optimizer_lang.step()
+                optimizer_bert.step()
                 optimizer_label.step() ## ADD step() to update parameters after each iteration
                 batch_iter += 1
                 
@@ -189,8 +185,8 @@ def train(data, dev_data, test_data, labeler, vocab, config): # EDIT: remove , b
                         # Update scheduler for learning rate at the end of each epoch AND after optimizer.step()
                         # print("optimizer_label params: ", optimizer_label.param_groups)
                         # Schduler step
-                        # scheduler_lang.step()
-                        # scheduler_bert.step()
+                        scheduler_lang.step()
+                        scheduler_bert.step()
                         scheduler_label.step()
                         global_step += 1
 
@@ -541,8 +537,8 @@ def TestDataForBestModel(test_data, labeler, vocab, config, global_step):
 def evaluate(data, labeler, vocab, outputFile):
     start = time.time()
     labeler.model.eval()
-    # language_embedder.eval()
-    # bert.eval()
+    language_embedder.eval()
+    bert.eval()
     output = open(outputFile, 'w', encoding='utf-8')
     total_gold_entity_num, total_predict_entity_num, total_correct_entity_num = 0, 0, 0
     total_gold_agent_entity_num, total_predict_agent_entity_num, total_correct_agent_entity_num = 0, 0, 0
@@ -557,21 +553,17 @@ def evaluate(data, labeler, vocab, outputFile):
     prop_total_gold_target_entity_num, prop_total_predict_target_entity_num, prop_gold_total_correct_target_entity_num, prop_predict_total_correct_target_entity_num = 0, 0, 0, 0
 
     for onebatch in data_iter(data, config.test_batch_size, False, False):
-        # Old 
-        # words, extwords, predicts, inmasks, labels, outmasks, \
-        # bert_indices_tensor, bert_segments_tensor, bert_pieces_tensor, lang_ids  = \
-          #   batch_data_variable(onebatch, vocab)
-        # if config.use_cuda:
-          #   bert_indices_tensor = bert_indices_tensor.cuda()
-          #   bert_segments_tensor = bert_segments_tensor.cuda()
-          #   bert_pieces_tensor = bert_pieces_tensor.cuda()
         words, extwords, predicts, inmasks, labels, outmasks, \
-        _, _, _, _  = batch_data_variable(onebatch, vocab)
-        
+        bert_indices_tensor, bert_segments_tensor, bert_pieces_tensor, lang_ids  = \
+            batch_data_variable(onebatch, vocab)
+        if config.use_cuda:
+            bert_indices_tensor = bert_indices_tensor.cuda()
+            bert_segments_tensor = bert_segments_tensor.cuda()
+            bert_pieces_tensor = bert_pieces_tensor.cuda()
         count = 0
-        # lang_embedding = language_embedder(lang_ids)
-        # bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
-        predict_labels = labeler.label(words, extwords, predicts, inmasks) # Edit: , bert_hidden
+        lang_embedding = language_embedder(lang_ids)
+        bert_hidden = bert(input_ids=bert_indices_tensor, token_type_ids=bert_segments_tensor, bert_pieces=bert_pieces_tensor, lang_embedding=lang_embedding)
+        predict_labels = labeler.label(words, extwords, predicts, inmasks, bert_hidden)
         # print("predicted labels: ", predict_labels)
         for result in batch_variable_srl(onebatch, predict_labels, vocab):
             printSRL(output, result)
@@ -655,6 +647,31 @@ def evaluate(data, labeler, vocab, outputFile):
            prop_total_gold_agent_entity_num, prop_total_predict_agent_entity_num, prop_gold_total_correct_agent_entity_num, prop_predict_total_correct_agent_entity_num, \
            prop_total_gold_target_entity_num, prop_total_predict_target_entity_num, prop_gold_total_correct_target_entity_num, prop_predict_total_correct_target_entity_num
 
+"""
+class Optimizer:
+    def __init__(self, parameter, config):
+        self.optim = torch.optim.Adam(parameter, lr=config.learning_rate, betas=(config.beta_1, config.beta_2),
+                                      eps=config.epsilon)
+        #self.optim = torch.optim.Adadelta(parameter, lr=1.0, rho=0.95)
+        decay, decay_step = config.decay, config.decay_steps
+        l = lambda epoch: decay ** (epoch // decay_step)
+        self.scheduler = torch.optim.lr_scheduler.LambdaLR(self.optim, lr_lambda=l)
+
+    def step(self):
+        self.optim.step()
+        self.schedule()
+        self.optim.zero_grad()
+
+    def schedule(self):
+        self.scheduler.step()
+
+    def zero_grad(self):
+        self.optim.zero_grad()
+
+    @property
+    def lr(self):
+        return self.scheduler.get_lr()"""
+
 
 if __name__ == '__main__':
     random.seed(1000) # 42, 666, 1000
@@ -694,7 +711,7 @@ if __name__ == '__main__':
     if gpu and args.use_cuda: config.use_cuda = True
     print("\nGPU using status: ", config.use_cuda)
     
-    # language_embedder = LanguageMLP(config=config)
+    language_embedder = LanguageMLP(config=config)
 
     # eval(expression): the content of expression is evaluated as a Python expression 
     # print(eval(config.model)) # <class 'driver.Model.BiLSTMCRFModel'>
@@ -703,16 +720,16 @@ if __name__ == '__main__':
     # print(model) # BiLSTMCRFModel
     
     # bert = BertExtractor(config)
-    # bert_config = BertConfig.from_json_file(config.bert_config_path)
-    # bert_config.use_adapter = config.use_adapter
-    # bert_config.use_language_emb = config.use_language_emb
-    # bert_config.num_adapters = config.num_adapters
-    # bert_config.adapter_size = config.adapter_size
-    # bert_config.language_emb_size = config.language_emb_size
-    # bert_config.num_language_features = config.language_features
-    # bert_config.nl_project = config.nl_project
+    bert_config = BertConfig.from_json_file(config.bert_config_path)
+    bert_config.use_adapter = config.use_adapter
+    bert_config.use_language_emb = config.use_language_emb
+    bert_config.num_adapters = config.num_adapters
+    bert_config.adapter_size = config.adapter_size
+    bert_config.language_emb_size = config.language_emb_size
+    bert_config.num_language_features = config.language_features
+    bert_config.nl_project = config.nl_project
     # BERT
-    # bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
+    bert = AdapterBERTModel.from_pretrained(config.bert_path, config=bert_config) # AdapterPGNBertModel xxxx
 
     # PGNBERT
     # bert = AdapterPGNBertModel(config.bert_path)
@@ -721,24 +738,24 @@ if __name__ == '__main__':
     if config.use_cuda:
         torch.backends.cudnn.enabled = True
         model = model.cuda()
-        # bert = bert.cuda()
-        # language_embedder = language_embedder.cuda()
+        bert = bert.cuda()
+        language_embedder = language_embedder.cuda()
     
     labeler = SRLLabeler(model)
     
-    # bert_token = BertTokenHelper(config.bert_path)
+    bert_token = BertTokenHelper(config.bert_path)
 
-    # in_language_list = config.in_langs
-    # out_language_list = config.out_langs
+    in_language_list = config.in_langs
+    out_language_list = config.out_langs
 
-    # lang_dic = {}
-    # lang_dic['in'] = in_language_list
-    # lang_dic['oov'] = out_language_list
+    lang_dic = {}
+    lang_dic['in'] = in_language_list
+    lang_dic['oov'] = out_language_list
 
-    data = read_corpus(config.train_file, bert_token = None, lang_id = None) # EDIT: remove , bert_token, lang_dic
-    dev_data = read_corpus(config.dev_file, bert_token = None, lang_id = None) # EDIT: remove , bert_token, lang_dic
-    test_data = read_corpus(config.test_file, bert_token = None, lang_id = None) # EDIT: remove , bert_token, lang_dic
+    data = read_corpus(config.train_file, bert_token, lang_dic)
+    dev_data = read_corpus(config.dev_file, bert_token, lang_dic)
+    test_data = read_corpus(config.test_file, bert_token, lang_dic)
     print("Finish code test!")
     # PGNBERT
-    train(data, dev_data, test_data, labeler, vocab, config) # EDIT: remove , bert, language_embedder
+    train(data, dev_data, test_data, labeler, vocab, config, bert, language_embedder)
     
