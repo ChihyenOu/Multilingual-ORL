@@ -1,8 +1,0 @@
-expdata/dataset_output_de
-expdata/dataset/
-myLog.log
-
-!expdata/dataset/result_orl_de_train.txt
-!expdata/dataset/result_orl_de_val.txt
-!expdata/dataset/result_orl_de_test.txt
-!expdata/dataset/result_orl_en_train.txt
