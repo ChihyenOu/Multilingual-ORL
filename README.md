@@ -13,7 +13,7 @@ There are 10 main folders, each of which represents model from different configu
 6. At the end, all the testing results and the best model will be saved into `expdata/dataset_[SEED_NUMBER]` and `expdata/dataset_output_[LANG]_[SEED_NUMBER]`, respectively.
 
 ## Raw and Processed Dataset
-- All the raw and processed dataset can be seen in [Thesis_Dataset](https://swtrepo.informatik.uni-mannheim.de/chou/Thesis_Dataset/-/tree/master) repository.
+- All the raw and processed dataset can be seen in [Thesis_Dataset](https://github.com/ChihyenOu/MultilingualORL_Dataset) repository.
 
 
 ## Reference
